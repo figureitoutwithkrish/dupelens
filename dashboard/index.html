@@ -4,149 +4,348 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DupeLens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f7f6f2; --card: #ffffff; --ink: #1d1d1b; --muted: #6b6a66; --line: #e4e2dc;
-    --accent: #1f6f5c; --accent-soft: #e3f1ec; --warn: #b5541c; --warn-soft: #fbeee5;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #151514; --card: #1f1f1d; --ink: #ecebe6; --muted: #a09f99; --line: #34332f;
-      --accent: #5cc3a6; --accent-soft: #1e3530; --warn: #f0965f; --warn-soft: #3a2619;
-    }
+    --bg: #07111F; --surface: #0D1B2A; --raised: #12243A; --raised-2: #173050;
+    --accent: #2589FF; --accent-2: #22D3EE; --ink: #F3F7FC; --muted: #9AAFC4;
+    --line: rgba(148, 173, 199, 0.16); --good: #34D399; --warn: #FBBF24; --bad: #F87171;
+    --r: 16px; --gap: 16px;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 48px; }
-  h1 { font-size: 30px; margin: 0 0 4px; letter-spacing: -0.02em; }
-  h2 { font-size: 20px; margin: 40px 0 8px; }
-  p.lead { color: var(--muted); margin: 0 0 24px; max-width: 760px; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
-  .card .k { font-size: 26px; font-weight: 650; font-variant-numeric: tabular-nums; }
-  .card .l { color: var(--muted); font-size: 13px; }
-  input[type=search] { width: 100%; padding: 11px 14px; font-size: 15px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); }
-  .result { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-top: 10px; }
-  .result .t { font-weight: 600; }
-  .row { display: flex; flex-wrap: wrap; gap: 8px 18px; color: var(--muted); font-size: 13px; margin: 4px 0 8px; }
-  .pill { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 12px; background: var(--accent-soft); color: var(--accent); }
-  .pill.warn { background: var(--warn-soft); color: var(--warn); }
-  table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; font-variant-numeric: tabular-nums; }
-  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); font-size: 14px; }
-  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
-  tr.best td { background: var(--accent-soft); }
-  .scroll { overflow-x: auto; }
-  .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
-  svg { width: 100%; height: auto; display: block; }
-  .axis { stroke: var(--line); } .grid { stroke: var(--line); stroke-dasharray: 2 3; }
-  .lab { fill: var(--muted); font-size: 11px; }
-  .matches { font-size: 13px; margin: 6px 0 0; padding-left: 18px; }
-  .matches li { margin: 2px 0; }
-  a { color: var(--accent); }
-  footer { margin-top: 48px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 14px; }
-  .note { color: var(--muted); font-size: 13px; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 Inter, system-ui, -apple-system, sans-serif; }
+  body { background: radial-gradient(1200px 500px at 10% -10%, rgba(37,137,255,.12), transparent 60%), var(--bg); min-height: 100vh; }
+  main { max-width: 1240px; margin: 0 auto; padding: 28px 16px 56px; }
+  a { color: var(--accent-2); text-decoration: none; } a:hover { text-decoration: underline; }
+  :focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; border-radius: 8px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .logo { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: grid; place-items: center; font-weight: 700; color: #04101e; }
+  h1 { font-size: 24px; margin: 0; letter-spacing: -.02em; }
+  .tag { color: var(--muted); font-size: 14px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { border: 1px solid var(--line); background: var(--surface); color: var(--muted); padding: 5px 11px; border-radius: 99px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+  .chip.live .dot { background: var(--good); } .chip.demo .dot { background: var(--warn); }
+
+  .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--gap); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; min-width: 0; }
+  .card h2 { font-size: 16px; margin: 0 0 4px; } .card .sub { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+  .span-8 { grid-column: span 8; } .span-4 { grid-column: span 4; } .span-12 { grid-column: span 12; } .span-6 { grid-column: span 6; } .span-7 { grid-column: span 7; } .span-5 { grid-column: span 5; }
+  @media (max-width: 980px) { .span-8, .span-4, .span-6, .span-7, .span-5 { grid-column: span 12; } }
+
+  .seg { display: inline-flex; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 4px; margin-bottom: 16px; }
+  .seg button { background: none; border: 0; color: var(--muted); padding: 8px 14px; border-radius: 9px; font: inherit; font-size: 14px; cursor: pointer; }
+  .seg button[aria-selected="true"] { background: var(--raised-2); color: var(--ink); }
+  label { display: block; font-size: 12.5px; color: var(--muted); margin: 10px 0 6px; }
+  input[type=text], input[type=url], input[type=number], input[type=search], textarea {
+    width: 100%; background: var(--bg); border: 1px solid var(--line); color: var(--ink); border-radius: 10px; padding: 10px 12px; font: inherit; }
+  textarea { resize: vertical; min-height: 64px; }
+  .row2 { display: grid; grid-template-columns: 1fr 160px; gap: 12px; } @media (max-width: 600px) { .row2 { grid-template-columns: 1fr; } }
+  .drop { border: 1.5px dashed var(--line); border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 14px; cursor: pointer; background: var(--bg); }
+  .drop:hover, .drop.over { border-color: var(--accent); }
+  .drop img { width: 64px; height: 64px; object-fit: contain; border-radius: 8px; background: #fff; display: none; }
+  .btn { background: linear-gradient(135deg, var(--accent), #1b6fe0); color: #fff; border: 0; padding: 11px 18px; border-radius: 10px; font: inherit; font-weight: 600; cursor: pointer; margin-top: 14px; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .ghost { background: none; border: 1px solid var(--line); color: var(--ink); }
+  .notice { background: var(--raised); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; color: var(--muted); font-size: 13.5px; }
+  code { background: var(--bg); padding: 2px 6px; border-radius: 6px; color: var(--accent-2); font-size: 12.5px; word-break: break-all; }
+
+  .picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 10px; max-height: 360px; overflow-y: auto; margin-top: 12px; padding-right: 4px; }
+  .pick { background: var(--raised); border: 1px solid var(--line); border-radius: 12px; padding: 8px; cursor: pointer; text-align: left; color: var(--ink); font: inherit; transition: transform .15s, border-color .15s; }
+  .pick:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .pick .t { font-size: 12px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 6px; }
+  .pick .p { font-size: 12px; color: var(--accent-2); }
+  .ph { width: 100%; aspect-ratio: 1; object-fit: contain; background: #fff; border-radius: 8px; display: block; }
+
+  .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .kpi { background: var(--raised); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+  .kpi .v { font-size: 28px; font-weight: 700; letter-spacing: -.02em; }
+  .kpi .v.accent { color: var(--accent-2); }
+  .kpi .l { color: var(--muted); font-size: 12.5px; line-height: 1.35; }
+
+  #result[hidden] { display: none; }
+  .verdict { display: flex; gap: 14px; align-items: center; padding: 16px; border-radius: 14px; margin-bottom: 16px; border: 1px solid var(--line); background: var(--raised); }
+  .verdict .ic { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 22px; font-weight: 700; flex: none; }
+  .v-already .ic { background: rgba(37,137,255,.18); color: var(--accent-2); }
+  .v-variant .ic { background: rgba(251,191,36,.15); color: var(--warn); }
+  .v-new .ic { background: rgba(52,211,153,.15); color: var(--good); }
+  .verdict h3 { margin: 0; font-size: 19px; } .verdict p { margin: 2px 0 0; color: var(--muted); font-size: 13.5px; }
+  .query { display: grid; grid-template-columns: 120px 1fr; gap: 16px; align-items: center; margin-bottom: 18px; }
+  .query .ph { width: 120px; }
+  .gauge { position: relative; height: 10px; background: var(--bg); border-radius: 99px; margin: 26px 0 30px; border: 1px solid var(--line); }
+  .gauge .band { position: absolute; top: 0; bottom: 0; background: linear-gradient(90deg, rgba(37,137,255,.35), rgba(34,211,238,.35)); border-radius: 99px; }
+  .gauge .mk { position: absolute; top: -7px; width: 3px; height: 22px; border-radius: 2px; transform: translateX(-50%); }
+  .gauge .mk span { position: absolute; top: 24px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 11.5px; color: var(--muted); }
+  .gauge .mk.top span { top: -20px; }
+  .matches { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+  .m { background: var(--raised); border: 1px solid var(--line); border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .m .t { font-size: 12.5px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; min-height: 50px; }
+  .m .meta { display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .price { font-weight: 700; font-size: 16px; }
+  .pill { font-size: 11.5px; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); }
+  .pill.same { color: var(--accent-2); border-color: rgba(34,211,238,.4); }
+  .pill.sim { color: var(--warn); border-color: rgba(251,191,36,.4); }
+  .pill.up { color: var(--bad); } .pill.down { color: var(--good); }
+  .spin { width: 22px; height: 22px; border: 3px solid var(--line); border-top-color: var(--accent-2); border-radius: 50%; animation: s 0.8s linear infinite; display: inline-block; vertical-align: middle; }
+  @keyframes s { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spin { animation: none; } .pick { transition: none; } }
+
+  .gaps { display: grid; gap: 10px; }
+  .gap-row { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; background: var(--raised); border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; cursor: pointer; color: var(--ink); font: inherit; text-align: left; width: 100%; }
+  .gap-row:hover { border-color: var(--accent); }
+  .gap-row .ph { width: 52px; }
+  .gap-row .t { font-size: 13px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .bar { height: 6px; background: var(--bg); border-radius: 99px; margin-top: 6px; overflow: hidden; } .bar i { display: block; height: 100%; background: var(--bad); border-radius: 99px; }
+
+  svg text { fill: var(--muted); font-size: 11px; font-family: inherit; }
+  .tip { position: fixed; pointer-events: none; background: var(--raised-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; font-size: 12px; z-index: 10; display: none; }
+  footer { margin-top: 28px; color: var(--muted); font-size: 12.5px; line-height: 1.6; }
 </style>
 </head>
 <body>
 <main>
-  <h1>DupeLens</h1>
-  <p class="lead">The same product is often listed many times by different sellers at different prices. DupeLens reads each listing's photo and title, finds the other listings of the same product, and shows how its price compares with the typical (median) price.</p>
-  <div class="cards" id="cards"></div>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden="true">DL</div>
+      <div><h1>DupeLens</h1><div class="tag">Is this product already listed by other sellers, and is the price fair?</div></div>
+    </div>
+    <div class="chips">
+      <span class="chip" id="status"><span class="dot"></span><span>Checking model…</span></span>
+      <span class="chip">Amazon India · Personal care appliances · 2023 snapshot</span>
+    </div>
+  </header>
 
-  <h2>Price lookup: Amazon India, personal care appliances</h2>
-  <p class="note" id="india-note"></p>
-  <input type="search" id="q" placeholder="Search a product, e.g. hair straightener comb, hair dryer 2000W, auto curler">
-  <div id="results"></div>
+  <section class="grid" aria-label="Check a listing">
+    <div class="card span-8">
+      <h2>Check a listing</h2>
+      <p class="sub">Give DupeLens a product's title and photo. It finds the same product listed by other sellers and compares the price.</p>
+      <div class="seg" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="catalog">Pick a catalog listing</button>
+        <button role="tab" aria-selected="false" data-tab="new">Check a new listing</button>
+      </div>
 
-  <h2>How accurate is the model (Shopee test set, used once)</h2>
-  <p class="note">Per-listing F1 (Kaggle convention, self-match counted) with 95% CIs from bootstrapping product groups. Trained and tuned on separate product groups; no product appears in two splits.</p>
-  <div class="scroll"><table id="ladder"></table></div>
+      <div id="tab-catalog">
+        <input type="search" id="q" placeholder="Search 698 listings: hair dryer, straightener comb, curler…" aria-label="Search catalog">
+        <div class="picker" id="picker"></div>
+        <p class="sub" style="margin:10px 0 0">The picked listing is hidden from the catalog and checked as if it were brand new.</p>
+      </div>
 
-  <h2>Compression and the precision-recall trade-off</h2>
-  <div class="charts">
-    <div class="card"><div class="l">Candidate recall vs dimensions per modality (validation, k=50)</div><svg id="sweep" viewBox="0 0 360 240"></svg></div>
-    <div class="card"><div class="l">Precision vs recall of the main model (Shopee test)</div><svg id="pr" viewBox="0 0 360 240"></svg></div>
-  </div>
+      <form id="tab-new" hidden>
+        <div id="demo-note" class="notice" hidden>Checking brand-new listings runs the AI models on your computer. Start the app locally and open it there:<br><code>cd "/Volumes/T7 Shield/dupelens" && .venv/bin/python -m src.app</code> then visit <code>http://127.0.0.1:8000</code></div>
+        <label for="title">Listing title</label>
+        <textarea id="title" required placeholder="e.g. Hair Straightener Comb for Women & Men, Hair Styler, PTC Heating Electric Straightener Brush"></textarea>
+        <div class="row2">
+          <div>
+            <label for="imgurl">Photo: image URL (right-click the product photo on Amazon → Copy image address) or drop a file</label>
+            <input type="url" id="imgurl" placeholder="https://m.media-amazon.com/images/I/….jpg">
+          </div>
+          <div>
+            <label for="price">Your price (₹, optional)</label>
+            <input type="number" id="price" min="1" step="1" placeholder="499">
+          </div>
+        </div>
+        <label>Or upload the photo</label>
+        <div class="drop" id="drop" tabindex="0" role="button" aria-label="Upload a product photo">
+          <img id="preview" alt="">
+          <span id="drop-text">Drop an image here or click to choose</span>
+          <input type="file" id="file" accept="image/*" hidden>
+        </div>
+        <button class="btn" id="go" type="submit">Check listing</button>
+      </form>
+    </div>
 
-  <h2>Where it fails</h2>
-  <div class="scroll"><table id="errors"></table></div>
+    <div class="card span-4">
+      <h2>At a glance</h2>
+      <p class="sub">Measured on held-out data; see the model section below.</p>
+      <div class="kpis" id="kpis"></div>
+    </div>
+  </section>
 
-  <footer>Model trained and tested on Shopee Kaggle data. Prices are Kaggle snapshots (Amazon India, 2023), not live. No listing photos shown. Indian match labels and error tags were made by Claude, an AI assistant, from titles and photos, not by human annotators.</footer>
+  <section class="card span-12" id="result" hidden aria-live="polite" style="margin-top:16px"></section>
+
+  <section class="grid" style="margin-top:16px">
+    <div class="card span-7">
+      <h2>Biggest price gaps</h2>
+      <p class="sub">Listings priced furthest above the typical price of the same product (median across sellers). Click one to see its matches.</p>
+      <div class="gaps" id="gaps"></div>
+    </div>
+    <div class="card span-5">
+      <h2>How good is the model?</h2>
+      <p class="sub">F1 on Shopee test products the model never saw (0 = useless, 1 = perfect). Bars show 95% confidence intervals.</p>
+      <svg id="ladder" viewBox="0 0 420 260" role="img" aria-label="Test F1 by model"></svg>
+      <p class="sub" id="india-acc" style="margin-top:10px"></p>
+    </div>
+  </section>
+
+  <footer>
+    How it works: CLIP reads the photo, a multilingual language model reads the title, both are compressed to 32 numbers each (PCA whitening), and a logistic-regression model trained on 34,250 Shopee listings scores each look-alike using photo, title, size/pack-number and neighbour clues. Price is never used to decide a match.<br>
+    "Same product" = model probability ≥ 0.99 with no size/pack conflict; "similar" = 0.82–0.99, often a colour or pack variant. Prices are 2023 Kaggle snapshots of Amazon India, not live. Photos load from Amazon's image servers. Indian match quality was checked on 60 held-out pairs labelled by Claude (an AI assistant), not by human annotators.
+  </footer>
 </main>
+<div class="tip" id="tip"></div>
 <script>
-const fmt = (x, d = 3) => x === null || x === undefined ? "–" : Number(x).toFixed(d);
-const rupee = x => "₹" + Math.round(x).toLocaleString("en-IN");
-const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const NAMES = { B0: "Self-only floor", B1: "Exact image hash", B2: "Best single feature (TF-IDF)", ablation: "M1 without number tokens",
-                M1: "M1 logistic regression", M2: "M2 small MLP", M1_components: "M1 + grouping into components" };
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const rupee = x => x == null ? "–" : "₹" + Math.round(x).toLocaleString("en-IN");
+const img = (src, cls = "ph") => `<img class="${cls}" src="${esc(src)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">`;
+let CAT = null, LIVE = false;
 
-function line(svg, series, xs, opts) {
-  const W = 360, H = 240, L = 40, R = 10, T = 12, B = 30;
-  const [x0, x1] = opts.x, [y0, y1] = opts.y;
-  const sx = v => L + (opts.logx ? (Math.log2(v) - Math.log2(x0)) / (Math.log2(x1) - Math.log2(x0)) : (v - x0) / (x1 - x0)) * (W - L - R);
-  const sy = v => H - B - (v - y0) / (y1 - y0) * (H - T - B);
-  let s = "";
-  for (const t of opts.yt) s += `<line class="grid" x1="${L}" x2="${W - R}" y1="${sy(t)}" y2="${sy(t)}"/><text class="lab" x="${L - 6}" y="${sy(t) + 4}" text-anchor="end">${t}</text>`;
-  for (const t of opts.xt) s += `<text class="lab" x="${sx(t)}" y="${H - B + 16}" text-anchor="middle">${t}</text>`;
-  s += `<text class="lab" x="${(W + L) / 2}" y="${H - 2}" text-anchor="middle">${opts.xl}</text>`;
-  series.forEach(se => {
-    const pts = se.pts.map(p => `${sx(p[0])},${sy(p[1])}`).join(" ");
-    s += `<polyline fill="none" stroke="${se.color}" stroke-width="2" ${se.dash ? 'stroke-dasharray="4 3"' : ""} points="${pts}"/>`;
-    if (se.label) { const p = se.pts[se.pts.length - 1]; s += `<text class="lab" x="${sx(p[0]) - 4}" y="${sy(p[1]) - 6}" text-anchor="end" fill="${se.color}">${se.label}</text>`; }
-  });
-  svg.innerHTML = s;
+function setTab(name) {
+  document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === name));
+  $("#tab-catalog").hidden = name !== "catalog"; $("#tab-new").hidden = name !== "new";
+}
+document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => setTab(b.dataset.tab)));
+
+// ---------- result rendering (shared by catalog replay and live checks) ----------
+function render(r) {
+  const box = $("#result"); box.hidden = false;
+  const V = { already_listed: ["v-already", "=", r.same === 1 ? "Already listed by 1 other seller" : `Already listed by ${r.same} other sellers`,
+                               "The model is very confident these are the same product (probability ≥ 0.99)."],
+              possible_variant: ["v-variant", "≈", `${r.similar} similar listing${r.similar === 1 ? "" : "s"} found`,
+                               "Close look-alikes, but probably a different colour, pack or model. Not counted as the same product."],
+              looks_new: ["v-new", "+", "Looks like a new listing", "No listing in the catalog is close enough to be the same product."] }[r.verdict];
+  let gauge = "";
+  if (r.typical != null) {
+    const lo = Math.min(r.min, r.query.price ?? r.min), hi = Math.max(r.max, r.query.price ?? r.max), span = Math.max(hi - lo, 1);
+    const x = v => 4 + 92 * (v - lo) / span;
+    gauge = `<div class="gauge" aria-label="Price range of the same product">
+      <div class="band" style="left:${x(r.min)}%;width:${Math.max(x(r.max) - x(r.min), 1)}%"></div>
+      <div class="mk" style="left:${x(r.typical)}%;background:var(--accent-2)"><span>typical ${rupee(r.typical)}</span></div>
+      ${r.query.price ? `<div class="mk top" style="left:${x(r.query.price)}%;background:#fff"><span>this listing ${rupee(r.query.price)}</span></div>` : ""}
+    </div>`;
+  }
+  const pct = r.pct;
+  const priceLine = r.typical == null ? "" : `<p class="sub" style="margin:0">Same product sells for ${rupee(r.min)}–${rupee(r.max)}; typical ${rupee(r.typical)}.
+    ${pct != null ? `This listing is <b class="num">${Math.abs(pct)}% ${pct >= 0 ? "above" : "below"}</b> typical: ${pct > 20 ? "overpriced." : pct < -10 ? "a good deal." : "a fair price."}` : ""}</p>`;
+  box.innerHTML = `
+    <div class="verdict ${V[0]}"><div class="ic" aria-hidden="true">${V[1]}</div><div><h3>${V[2]}</h3><p>${V[3]}</p></div></div>
+    <div class="query">${r.query.image ? img(r.query.image) : `<div class="ph"></div>`}
+      <div><div style="font-weight:600">${esc(r.query.title.slice(0, 160))}</div>
+      <div class="price num" style="margin:4px 0">${r.query.price ? rupee(r.query.price) : "No price given"}</div>${priceLine}</div></div>
+    ${gauge}
+    ${r.matches.length ? `<h2 style="margin:0 0 10px">Matching listings</h2><div class="matches">${r.matches.map(m => `
+      <div class="m">${img(m.image)}
+        <div class="t">${esc(m.title)}</div>
+        <div class="meta"><span class="price num">${rupee(m.price)}</span>
+          ${m.pct != null ? `<span class="pill ${m.pct > 20 ? "up" : m.pct < -10 ? "down" : ""} num">${m.pct > 0 ? "+" : ""}${m.pct}% vs typical</span>` : ""}</div>
+        <div class="meta"><span class="pill ${m.kind === "same" ? "same" : "sim"}">${m.kind === "same" ? "Same product" : "Similar: variant?"} · ${(m.prob * 100).toFixed(m.prob > 0.999 ? 2 : 1)}%</span>
+          ${m.url ? `<a href="${esc(m.url)}" target="_blank" rel="noopener">Amazon ↗</a>` : ""}</div>
+      </div>`).join("")}</div>` : ""}`;
+  box.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
 }
 
-Promise.all(["ladder", "pca", "pr_curve", "errors", "india_matches", "india_summary"].map(f => fetch(`data/${f}.json`).then(r => r.json())))
-.then(([ladder, pca, pr, errors, matches, summary]) => {
-  const m1 = ladder.find(r => r.step === "M1"), b0 = ladder.find(r => r.step === "B0");
-  const ho = summary.holdout || {};
-  const spreads = matches.filter(m => m.typical_price).map(m => Math.abs(m.pct_vs_typical));
-  document.getElementById("cards").innerHTML = [
-    [fmt(m1.f1), `Shopee test F1 (95% CI ${fmt(m1.f1_ci_low)}–${fmt(m1.f1_ci_high)}), vs ${fmt(b0.f1)} self-only floor`],
-    ["32", "dims per modality after PCA whitening (from 512 image / 768 text)"],
-    [ho.precision !== undefined ? Math.round(ho.precision * 100) + "%" : "–", `precision of Indian matches on ${ho.n || "–"} held-out labelled pairs`],
-    [matches.filter(m => m.above_20pct).length, "Indian listings priced more than 20% above the typical price"],
-  ].map(([k, l]) => `<div class="card"><div class="k">${k}</div><div class="l">${esc(l)}</div></div>`).join("");
+function replay(i) {
+  const L = CAT.listings, R = CAT.results[i], me = L[i];
+  const matches = R.matches.map(([j, p, k]) => ({ ...L[j], prob: p, kind: k }));
+  const samePrices = matches.filter(m => m.kind === "same").map(m => m.price);
+  render({ verdict: R.verdict, same: R.same, similar: R.similar, typical: R.typical, pct: R.pct,
+           min: samePrices.length ? Math.min(...samePrices) : null, max: samePrices.length ? Math.max(...samePrices) : null,
+           query: { title: me.title, price: me.price, image: me.image },
+           matches: matches.map(m => ({ ...m, pct: R.typical ? Math.round(1000 * (m.price / R.typical - 1)) / 10 : null })) });
+}
 
-  document.getElementById("india-note").textContent =
-    `${matches.length} of ${summary.sites.amazon.listings} listings have at least one high-confidence match (probability ≥ ${ho.threshold}). ` +
-    `On held-out pairs, ${Math.round((ho.precision || 0) * 100)}% of matches were the same product in the same colour (95% CI ${Math.round(ho.precision_ci[0] * 100)}–${Math.round(ho.precision_ci[1] * 100)}%); most of the rest are colour variants or different combo packs of the same model.`;
+// ---------- catalog picker ----------
+function drawPicker() {
+  const words = $("#q").value.toLowerCase().split(/\s+/).filter(Boolean);
+  const idx = CAT.listings.map((l, i) => i).filter(i => words.every(w => CAT.listings[i].title.toLowerCase().includes(w)));
+  idx.sort((a, b) => (CAT.results[b].same > 0) - (CAT.results[a].same > 0));
+  $("#picker").innerHTML = idx.slice(0, 60).map(i => { const l = CAT.listings[i];
+    return `<button class="pick" data-i="${i}" title="${esc(l.title)}">${img(l.image)}<div class="t">${esc(l.title)}</div><div class="p num">${rupee(l.price)}</div></button>`; }).join("")
+    || `<p class="sub">No listings match “${esc($("#q").value)}”.</p>`;
+}
+$("#picker").addEventListener("click", e => { const b = e.target.closest(".pick"); if (b) replay(+b.dataset.i); });
+$("#q").addEventListener("input", drawPicker);
 
-  const box = document.getElementById("results"), q = document.getElementById("q");
-  const show = () => {
-    const words = q.value.toLowerCase().split(/\s+/).filter(Boolean);
-    let hits = matches.filter(m => words.every(w => m.title.toLowerCase().includes(w)));
-    hits = hits.sort((a, b) => (b.typical_price ? 1 : 0) - (a.typical_price ? 1 : 0) || b.matches.length - a.matches.length).slice(0, 12);
-    box.innerHTML = hits.map(m => {
-      const pct = m.pct_vs_typical;
-      const tag = m.typical_price === null ? `<span class="pill">1 other listing</span>`
-        : m.above_20pct ? `<span class="pill warn">${pct > 0 ? "+" : ""}${pct}% vs typical</span>` : `<span class="pill">${pct > 0 ? "+" : ""}${pct}% vs typical</span>`;
-      return `<div class="result"><div class="t">${esc(m.title.slice(0, 140))}</div>
-        <div class="row"><span>Price ${rupee(m.price)}</span>${m.typical_price ? `<span>Typical ${rupee(m.typical_price)}</span>` : ""}
-        <span>Range ${rupee(m.min_price)}–${rupee(m.max_price)}</span><span>${m.matches.length} matching listing${m.matches.length > 1 ? "s" : ""}</span>${tag}
-        <a href="${esc(m.url)}" target="_blank" rel="noopener">listing</a></div>
-        <ul class="matches">${m.matches.slice(0, 5).map(x => `<li>${rupee(x.price)} · ${esc(x.title.slice(0, 90))} <span class="note">(${fmt(x.prob, 3)})</span></li>`).join("")}</ul></div>`;
-    }).join("") || `<p class="note">No matching listings.</p>`;
-  };
-  q.addEventListener("input", show); show();
+// ---------- live check form ----------
+let FILE = null;
+const drop = $("#drop"), fileIn = $("#file");
+const setFile = f => { if (!f) return; FILE = f; const u = URL.createObjectURL(f); $("#preview").src = u; $("#preview").style.display = "block"; $("#drop-text").textContent = f.name; };
+drop.addEventListener("click", () => fileIn.click());
+drop.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileIn.click(); } });
+fileIn.addEventListener("change", () => setFile(fileIn.files[0]));
+["dragover", "dragenter"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => setFile(e.dataTransfer.files[0]));
 
-  document.getElementById("ladder").innerHTML = "<tr><th>Model</th><th>Test F1</th><th>95% CI</th><th>Pair precision</th><th>Pair recall</th></tr>" +
-    ladder.map(r => `<tr class="${r.step === "M1" ? "best" : ""}"><td>${NAMES[r.step] || r.step}</td><td>${fmt(r.f1)}</td><td>${fmt(r.f1_ci_low)}–${fmt(r.f1_ci_high)}</td><td>${fmt(r.pair_precision)}</td><td>${fmt(r.pair_recall)}</td></tr>`).join("");
-
-  const colors = { plain: "#8a8986", whiten: "#3b7dd8", shrink: "#1f6f5c" };
-  const sw = ["plain", "whiten", "shrink"].map(v => ({ label: v, color: colors[v],
-    pts: pca.sweep.filter(r => r.pca_variant === v).map(r => [Number(r.dim), r.cand_recall]).sort((a, b) => a[0] - b[0]) }));
-  const raw = pca.sweep.find(r => r.pca_variant === "none").cand_recall;
-  sw.push({ label: "raw", color: "#b5541c", dash: true, pts: [[32, raw], [256, raw]] });
-  line(document.getElementById("sweep"), sw, null, { x: [32, 256], y: [0.88, 1.0], logx: true, xt: [32, 64, 128, 256], yt: [0.9, 0.95, 1.0], xl: "dims per modality" });
-  line(document.getElementById("pr"), [{ color: "#1f6f5c", pts: pr.map(p => [p.recall, p.precision]).sort((a, b) => a[0] - b[0]) }], null,
-       { x: [0, 1], y: [0, 1], xt: [0, 0.25, 0.5, 0.75, 1], yt: [0, 0.5, 1], xl: "pairwise recall" });
-
-  const pick = errors.filter((e, i) => i % 6 === 0).slice(0, 5);
-  document.getElementById("errors").innerHTML = "<tr><th>Error</th><th>Type</th><th>Listing A</th><th>Listing B</th></tr>" +
-    pick.map(e => `<tr><td>${e.kind === "miss" ? "missed match" : "false match"}</td><td>${esc(e.tag)}</td><td>${esc(e.title_a.slice(0, 70))}</td><td>${esc(e.title_b.slice(0, 70))}</td></tr>`).join("");
+$("#tab-new").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!LIVE) return;
+  const title = $("#title").value.trim(), url = $("#imgurl").value.trim(), price = parseFloat($("#price").value) || null;
+  if (!title || (!FILE && !url)) { alert("Add a title and a photo (URL or file)."); return; }
+  const fd = new FormData(); fd.append("title", title); if (price) fd.append("price", price);
+  if (FILE) fd.append("image", FILE); else fd.append("image_url", url);
+  const go = $("#go"); go.disabled = true; go.innerHTML = `<span class="spin"></span> Checking…`;
+  try {
+    const res = await fetch("/api/check", { method: "POST", body: fd });
+    const r = await res.json();
+    if (!res.ok) throw new Error(r.detail || "Check failed");
+    const same = r.matches.filter(m => m.label === "same product");
+    render({ verdict: r.verdict, same: r.same, similar: r.similar, typical: r.typical_price, pct: r.your_price_vs_typical_pct ?? null,
+             min: r.min_price, max: r.max_price, query: { title, price, image: FILE ? $("#preview").src : url },
+             matches: r.matches.map(m => ({ title: m.title, price: m.price, url: m.url, image: m.image_url, prob: m.prob,
+                                            kind: m.label === "same product" ? "same" : "similar", pct: m.pct_vs_typical })) });
+  } catch (err) {
+    const box = $("#result"); box.hidden = false;
+    box.innerHTML = `<div class="verdict"><div class="ic" style="color:var(--bad)">!</div><div><h3>Could not check this listing</h3><p>${esc(err.message)}</p></div></div>`;
+  } finally { go.disabled = false; go.textContent = "Check listing"; }
 });
+
+// ---------- ladder chart ----------
+function ladder(rows) {
+  const names = { B0: "Do nothing (self only)", B1: "Exact photo hash", B2: "Title words only", ablation: "Without size/pack clues",
+                  M1: "DupeLens model", M2: "Neural net (MLP)", M1_components: "Model + grouping" };
+  const order = ["B0", "B1", "B2", "ablation", "M2", "M1"], data = order.map(s => rows.find(r => r.step === s)).filter(Boolean);
+  const W = 420, L = 150, R = 50, rowH = 38, x = v => L + v * (W - L - R);
+  let s = "";
+  [0, 0.25, 0.5, 0.75, 1].forEach(t => s += `<line x1="${x(t)}" x2="${x(t)}" y1="4" y2="${data.length * rowH + 4}" stroke="rgba(148,173,199,.12)"/><text x="${x(t)}" y="${data.length * rowH + 20}" text-anchor="middle">${t}</text>`);
+  data.forEach((r, i) => {
+    const y = 10 + i * rowH, best = r.step === "M1";
+    s += `<text x="${L - 10}" y="${y + 15}" text-anchor="end" style="fill:${best ? "var(--ink)" : "var(--muted)"};font-weight:${best ? 600 : 400}">${names[r.step]}</text>
+      <rect x="${L}" y="${y + 3}" width="${x(r.f1) - L}" height="18" rx="5" fill="${best ? "url(#g)" : "#1d3a5e"}" data-tip="${names[r.step]}: F1 ${r.f1.toFixed(3)} (95% CI ${r.f1_ci_low.toFixed(3)}–${r.f1_ci_high.toFixed(3)})"/>
+      <line x1="${x(r.f1_ci_low)}" x2="${x(r.f1_ci_high)}" y1="${y + 12}" y2="${y + 12}" stroke="#F3F7FC" stroke-width="1.5" opacity=".7"/>
+      <text x="${x(r.f1) + 6}" y="${y + 16}" class="num" style="fill:var(--ink)">${r.f1.toFixed(3)}</text>`;
+  });
+  $("#ladder").setAttribute("viewBox", `0 0 ${W} ${data.length * rowH + 28}`);
+  $("#ladder").innerHTML = `<defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#2589FF"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs>` + s;
+  const tip = $("#tip");
+  $("#ladder").addEventListener("mousemove", e => { const t = e.target.dataset?.tip; if (!t) { tip.style.display = "none"; return; }
+    tip.textContent = t; tip.style.display = "block"; tip.style.left = e.clientX + 12 + "px"; tip.style.top = e.clientY + 12 + "px"; });
+  $("#ladder").addEventListener("mouseleave", () => tip.style.display = "none");
+}
+
+// ---------- boot ----------
+Promise.all([fetch("data/catalog.json").then(r => r.json()), fetch("data/ladder.json").then(r => r.json()),
+             fetch("data/india_summary.json").then(r => r.json()),
+             fetch("/api/health").then(r => r.ok ? r.json() : null).catch(() => null)])
+.then(([cat, lad, summ, health]) => {
+  CAT = cat; LIVE = !!(health && health.live);
+  const st = $("#status"); st.classList.add(LIVE ? "live" : "demo");
+  st.lastElementChild.textContent = LIVE ? "Live model connected" : "Demo mode: catalog checks only";
+  $("#demo-note").hidden = LIVE; $("#go").disabled = !LIVE;
+  if (LIVE) setTab("new");
+
+  const n = cat.listings.length, dup = cat.results.filter(r => r.verdict === "already_listed").length;
+  const over = cat.results.filter(r => r.pct != null && r.pct > 20).length, m1 = lad.find(r => r.step === "M1"), ho = summ.holdout;
+  $("#kpis").innerHTML = [
+    [n.toLocaleString("en-IN"), "listings in the catalog"],
+    [Math.round(100 * dup / n) + "%", `already listed by another seller (${dup} of ${n})`, true],
+    [over, "listings priced >20% above the typical price"],
+    [m1.f1.toFixed(2), `model F1 on unseen Shopee products (CI ${m1.f1_ci_low.toFixed(2)}–${m1.f1_ci_high.toFixed(2)})`, true],
+  ].map(([v, l, a]) => `<div class="kpi"><div class="v num ${a ? "accent" : ""}">${v}</div><div class="l">${l}</div></div>`).join("");
+  $("#india-acc").innerHTML = `On Amazon India, <b>${Math.round(ho.precision * 100)}%</b> of "same product" matches were exactly the same item in the same colour (95% CI ${Math.round(ho.precision_ci[0] * 100)}–${Math.round(ho.precision_ci[1] * 100)}%, ${ho.n} held-out pairs). Most others are the same model in another colour or pack.`;
+
+  const gaps = cat.results.map((r, i) => ({ i, ...r })).filter(r => r.pct != null && r.same >= 2).sort((a, b) => b.pct - a.pct).slice(0, 7);
+  const maxPct = Math.max(...gaps.map(g => g.pct), 1);
+  $("#gaps").innerHTML = gaps.map(g => { const l = cat.listings[g.i];
+    return `<button class="gap-row" data-i="${g.i}">${img(l.image)}<div><div class="t">${esc(l.title)}</div><div class="bar"><i style="width:${100 * g.pct / maxPct}%"></i></div></div>
+      <div style="text-align:right"><div class="price num">${rupee(l.price)}</div><div class="pill up num">+${g.pct}% · typical ${rupee(g.typical)}</div></div></button>`; }).join("");
+  $("#gaps").addEventListener("click", e => { const b = e.target.closest(".gap-row"); if (b) replay(+b.dataset.i); });
+  ladder(lad); drawPicker();
+}).catch(err => { $("#status").lastElementChild.textContent = "Could not load data"; console.error(err); });
 </script>
 </body>
 </html>

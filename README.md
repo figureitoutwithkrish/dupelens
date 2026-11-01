@@ -1,12 +1,27 @@
 # DupeLens
 
-**Finds the same product listed by different sellers, and shows each listing's price against the typical (median) price for that product.**
+**Give it an Amazon listing (title + photo, optionally your price). It tells you whether the same product is already listed by other sellers, shows those listings with their photos and prices, and says whether the price is fair.**
 
-A logistic-regression matcher over image, text and variant-aware features reaches **per-listing F1 0.838 (95% CI 0.825–0.851)** on a held-out set of Shopee product groups, against 0.461 for a self-only floor and 0.794 for the best single feature. Applied unchanged to Amazon India personal-care appliances, it groups listings of the same item and flags 52 listings priced more than 20% above the typical price.
+A logistic-regression matcher over image, text and variant-aware features reaches **per-listing F1 0.838 (95% CI 0.825–0.851)** on a held-out set of Shopee product groups, against 0.461 for a self-only floor and 0.794 for the best single feature. Applied to Amazon India personal-care appliances, it finds the same product listed by other sellers for 417 of 698 listings and flags 61 listings priced more than 20% above the typical price.
 
 **Live dashboard: https://dupelens.vercel.app**
 
 Every number below comes from code in this repo; the raw rows are in `results/results.csv`.
+
+## Use it
+
+- **Online demo:** https://dupelens.vercel.app — pick any of the 698 catalog listings; it is hidden from the catalog and checked as if new (real model output, precomputed).
+- **Check a brand-new listing (runs the models on your Mac):**
+
+```bash
+cd "/Volumes/T7 Shield/dupelens" && .venv/bin/python -m src.app
+```
+
+Open http://127.0.0.1:8000, choose **Check a new listing**, paste the Amazon title, paste the photo address (right-click the product photo → Copy image address) or drop the photo file, optionally add your price, and press **Check listing**.
+
+Example (a real Amazon listing that is *not* in the catalog): "FIT & SHAPE Hair Straightener Comb…", ₹390 → **Already listed by 12 other sellers**, same product sells for ₹395–₹1,449, typical ₹498, so ₹390 is 21.7% below typical. The first check takes ~10 s while the models load; later checks took 0.13–0.48 s (measured, photo download included).
+
+The app works best for products in the trained category (personal-care appliances: hair straighteners, dryers, curlers, trimmers). To use another category, change `INDIA_CATEGORY` in `src/config.py` and re-run the India steps.
 
 ## The problem
 
@@ -49,7 +64,7 @@ F1 is per listing with the self-match counted (Kaggle convention); CIs bootstrap
 - **Distribution shift.** At 32 dims the frozen Shopee PCA explains 0.503 of Indian image variance (Shopee test 0.479) and 0.570 of text variance (0.563): little shift in the embeddings, but the Shopee threshold over-matches inside one narrow category.
 - **Calibration.** 150 blind-labelled pairs: stratum-weighted precision at the Shopee threshold was 0.39 (CI 0.27–0.50), rising to 0.74 above probability 0.99. The India match threshold is therefore 0.99.
 - **Held-out precision.** On 60 *new* labelled matches above 0.99: **precision 0.50 (CI 0.37–0.63)** under a strict rule (same model *and* same colour and pack). Of the 30 false matches, 11 were the same model in another colour, 7 combo packs with different contents, 7 a single item vs a multi-colour/multi-pack set, 5 other.
-- **Price output.** 417 of 698 listings have at least one high-confidence match, 339 have a typical price (3+ listings), 52 are priced more than 20% above it. Prices use each listing's direct matches; connected components chained into one 100+ listing group on Indian data.
+- **Price output.** Each listing is checked against all the others (leave-one-out). 417 of 698 are already listed by at least one other seller; 336 have a typical price (median of at least 2 other listings of the same product); 61 are priced more than 20% above it and 61 at least 10% below. Prices use each listing's direct matches; connected components chained into one 100+ listing group on Indian data.
 
 **Labelling disclosure:** the Indian match labels (150 calibration + 60 held-out pairs) and the 30 Shopee error tags were made by **Claude, an AI assistant**, blind to model scores, from titles and photos. No human labels were collected, so no inter-annotator agreement could be measured.
 
@@ -63,7 +78,7 @@ F1 is per listing with the self-match counted (Kaggle convention); CIs bootstrap
 ## Reproduce
 
 ```bash
-python3.11 -m venv --copies .venv && .venv/bin/pip install torch sentence-transformers faiss-cpu scikit-learn pandas numpy matplotlib imagehash pillow requests kaggle six pytest
+python3.11 -m venv --copies .venv && .venv/bin/pip install torch sentence-transformers faiss-cpu scikit-learn pandas numpy matplotlib imagehash pillow requests kaggle six pytest fastapi uvicorn python-multipart
 kaggle competitions download -c shopee-product-matching -p data/ && unzip data/shopee-product-matching.zip -d data/
 .venv/bin/python -m pytest tests            # 25 unit tests
 .venv/bin/python -m src.data                # group split
@@ -75,6 +90,8 @@ kaggle competitions download -c shopee-product-matching -p data/ && unzip data/s
 .venv/bin/python -m src.india --frozen      # India calibration sample
 .venv/bin/python -m src.india --matches     # India price view + held-out sample
 .venv/bin/python -m src.export              # plots + dashboard data
+.venv/bin/python -m src.service             # demo results for every catalog listing
+.venv/bin/python -m src.app                 # live app at http://127.0.0.1:8000
 .venv/bin/python -m http.server 8765 --directory dashboard   # open http://localhost:8765 (live: https://dupelens.vercel.app)
 ```
 
@@ -89,4 +106,4 @@ kaggle competitions download -c shopee-product-matching -p data/ && unzip data/s
 
 ## Resume bullet
 
-Built DupeLens, a duplicate-listing classifier trained on 34k Shopee listings (product-group split) using image, text, and variant-aware features; logistic regression reached test F1 0.838 (95% CI 0.825–0.851) vs 0.794 for the best single-feature baseline, with number-token features adding 0.45 points. Compressed image and text embeddings from 512/768 to 32 dimensions each with PCA and shrinkage whitening, keeping validation F1 at 0.843 vs 0.846 at full dimension. Applied to 698 Amazon India personal-care listings at 50% precision on held-out labelled matches, flagging 52 listings priced more than 20% above the typical price for the same product.
+Built DupeLens, a duplicate-listing classifier trained on 34k Shopee listings (product-group split) using image, text, and variant-aware features; logistic regression reached test F1 0.838 (95% CI 0.825–0.851) vs 0.794 for the best single-feature baseline, with number-token features adding 0.45 points. Compressed image and text embeddings from 512/768 to 32 dimensions each with PCA and shrinkage whitening, keeping validation F1 at 0.843 vs 0.846 at full dimension. Applied to 698 Amazon India personal-care listings at 50% precision on held-out labelled matches, flagging 61 listings priced more than 20% above the typical price for the same product; shipped as an app that checks any new listing (title + photo) in under half a second once loaded.

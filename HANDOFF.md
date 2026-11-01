@@ -3,6 +3,9 @@
 Status: **complete and published.** GitHub (public): https://github.com/figureitoutwithkrish/dupelens .
 Vercel (static, root dashboard/, project atom-f2ef/dupelens): https://dupelens.vercel.app .
 Redeploy: `cd dashboard && ~/.local/vercel-cli/node_modules/.bin/vercel deploy --prod --yes`. README.md has every result; this file has the working context.
+Live app (new listings): `.venv/bin/python -m src.app` -> http://127.0.0.1:8000 (src/service.py = Matcher; src/app.py = FastAPI).
+Hosted site = same dashboard/index.html in demo mode (leave-one-out results in dashboard/data/catalog.json from `python -m src.service`).
+Typical price = median of >= 2 OTHER same-product listings: 336 listings have one, 61 are > 20% above.
 
 Rules (BLUEPRINT.md "Instructions for the assistant"): never invent numbers; stop and ask before scope changes;
 explain code; keep it simple. User's latest wishes: the team does NO manual work (Claude does everything,
