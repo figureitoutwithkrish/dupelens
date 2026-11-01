@@ -12,3 +12,5 @@ results/labelling/*.jpg
 results/jewellery_run/labelling/*.jpg
 .claude/
 results/jewellery_run/india_groups.json
+.vercel/
+.env*

@@ -1,7 +1,8 @@
 # DupeLens handoff brief (for a new assistant session)
 
-Status: **project complete locally.** Not a git repo yet; nothing pushed to GitHub, nothing deployed to Vercel
-(both need the user's explicit OK). README.md has every result; this file has the working context.
+Status: **complete and published.** GitHub (public): https://github.com/figureitoutwithkrish/dupelens .
+Vercel (static, root dashboard/, project atom-f2ef/dupelens): https://dupelens.vercel.app .
+Redeploy: `cd dashboard && ~/.local/vercel-cli/node_modules/.bin/vercel deploy --prod --yes`. README.md has every result; this file has the working context.
 
 Rules (BLUEPRINT.md "Instructions for the assistant"): never invent numbers; stop and ask before scope changes;
 explain code; keep it simple. User's latest wishes: the team does NO manual work (Claude does everything,

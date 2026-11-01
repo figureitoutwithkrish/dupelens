@@ -4,6 +4,8 @@
 
 A logistic-regression matcher over image, text and variant-aware features reaches **per-listing F1 0.838 (95% CI 0.825–0.851)** on a held-out set of Shopee product groups, against 0.461 for a self-only floor and 0.794 for the best single feature. Applied unchanged to Amazon India personal-care appliances, it groups listings of the same item and flags 52 listings priced more than 20% above the typical price.
 
+**Live dashboard: https://dupelens.vercel.app**
+
 Every number below comes from code in this repo; the raw rows are in `results/results.csv`.
 
 ## The problem
@@ -73,7 +75,7 @@ kaggle competitions download -c shopee-product-matching -p data/ && unzip data/s
 .venv/bin/python -m src.india --frozen      # India calibration sample
 .venv/bin/python -m src.india --matches     # India price view + held-out sample
 .venv/bin/python -m src.export              # plots + dashboard data
-.venv/bin/python -m http.server 8765 --directory dashboard   # open http://localhost:8765
+.venv/bin/python -m http.server 8765 --directory dashboard   # open http://localhost:8765 (live: https://dupelens.vercel.app)
 ```
 
 `notebooks/dupelens.ipynb` runs the same steps and shows the results. On an exFAT drive, delete macOS `._*` sidecar files after big writes (`find . -name '._*' -delete`). Do not import torch and faiss in one process unless faiss is imported first.
