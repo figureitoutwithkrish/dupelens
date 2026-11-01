@@ -1,6 +1,24 @@
 # data and caches are large and licence-restricted (blueprint section 6)
 /data/
-cache/
+cache/*
+# small artifacts needed to run the app and continue the India work on a fresh machine
+!cache/final_config.json
+!cache/final_config_v2.json
+!cache/test_done.json
+!cache/pca.joblib
+!cache/tfidf.joblib
+!cache/models.joblib
+!cache/models_v2.joblib
+!cache/india_listings.csv
+!cache/india_ids.csv
+!cache/india_img.npy
+!cache/india_txt.npy
+!cache/india_phash.npy
+!cache/india_dino.npy
+!cache/india_colour.npy
+!cache/labelling_key.csv
+!cache/holdout_key.csv
+!cache/v2_key.csv
 .venv/
 __pycache__/
 .pytest_cache/

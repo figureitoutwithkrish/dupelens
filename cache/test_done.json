@@ -1,0 +1,13 @@
+{
+  "config": {
+    "pca_variant": "shrink",
+    "dim": 32,
+    "k": 50,
+    "m1_threshold": 0.82,
+    "m2_threshold": 0.86,
+    "ablation_threshold": 0.82,
+    "component_threshold": 0.96,
+    "b2_feature": "tfidf_cos",
+    "b2_cutoff": 0.4348552106666169
+  }
+}

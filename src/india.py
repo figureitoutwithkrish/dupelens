@@ -377,6 +377,15 @@ if __name__ == "__main__":
         run_matches()
         make_grids(sheet_name="holdout_sheet.csv", prefix="holdout")
         sys.exit()
+    if "--photos" in sys.argv:
+        # Fresh machine: download photos for the COMMITTED catalog without rebuilding it, so the
+        # catalog rows stay aligned with the committed cache/india_*.npy vectors.
+        cat = pd.read_csv(config.INDIA_LISTINGS)
+        config.INDIA_IMAGES.mkdir(parents=True, exist_ok=True)
+        with ThreadPoolExecutor(32) as ex:
+            ok = list(ex.map(download_image, cat.itertuples(index=False)))
+        print(f"photos on disk: {sum(ok)} of {len(cat)}")
+        sys.exit()
     if "--holdout-stats" in sys.argv:
         print(json.dumps(holdout_stats(), indent=2))
         sys.exit()

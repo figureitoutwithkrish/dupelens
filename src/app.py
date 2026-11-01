@@ -19,7 +19,8 @@ app = FastAPI(title="DupeLens")
 matcher = Matcher()
 # Load the two encoders in the background so the first check does not wait ~10 s.
 _warm = config.INDIA_IMAGES / f"{matcher.catalog['listing_id'][0]}.jpg"
-threading.Thread(target=lambda: matcher.encode("warm up", _warm.read_bytes()), daemon=True).start()
+if _warm.exists():  # photos are downloaded by `python -m src.india --photos` on a fresh machine
+    threading.Thread(target=lambda: matcher.encode("warm up", _warm.read_bytes()), daemon=True).start()
 
 
 @app.get("/")

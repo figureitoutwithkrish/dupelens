@@ -3,6 +3,28 @@
 Paste this whole file into the new session, or tell it: "Read /Volumes/T7 Shield/dupelens/HANDOFF.md
 and BLUEPRINT.md, then continue from section 7 'Current task'." Check section 9 (progress log) first.
 
+## 0. Fresh machine setup (friend's laptop; repo already pushed)
+```bash
+git clone https://github.com/figureitoutwithkrish/dupelens.git && cd dupelens
+python3.11 -m venv .venv && .venv/bin/pip install -r requirements.txt   # pinned: saved models need sklearn 1.9.1
+.venv/bin/python -m pytest tests -q                                       # 25 should pass
+```
+- Already in git (no rebuild needed): trained models (cache/models.joblib, models_v2.joblib), PCA, TF-IDF,
+  configs, India catalog + its vectors (cache/india_*.npy), label keys, results/, dashboard/data/.
+  cache/test_done.json is committed: NEVER run `python -m src.train --test` (the test split is used up).
+- Run the live app: `.venv/bin/python -m src.india --photos` only downloads photos for the committed catalog
+  from Amazon's image URLs (no Kaggle needed). Then `.venv/bin/python -m src.app` -> http://127.0.0.1:8000.
+- Only to RETRAIN on Shopee (not needed to run the app): log in to Kaggle (`kaggle auth login`), accept the
+  rules at kaggle.com/competitions/shopee-product-matching, then
+  `kaggle competitions download -c shopee-product-matching -p data/ && unzip data/shopee-product-matching.zip -d data/`,
+  `.venv/bin/python -m src.data` (rebuilds the identical split, seed 42), `-m src.embed` (~12 min on Apple GPU),
+  `-m src.extra` (~8 min). Amazon India raw data (only to change category):
+  `curl -L -o data/india_raw/amazon/amazon.zip https://www.kaggle.com/api/v1/datasets/download/lokeshparab/amazon-products-dataset`
+  then unzip there. Changing INDIA_CATEGORY means re-running the India steps and new labels.
+- Not on this machine: the exFAT `._*` problem, the Vercel login and the T7 SSD paths are specific to the
+  original Mac. Redeploying the site needs the repo owner's Vercel login (`npx vercel login` then
+  `cd dashboard && npx vercel deploy --prod`), or connect the repo in the Vercel dashboard.
+
 ## 1. What the project is
 DupeLens checks a marketplace listing (title + photo, optional price) and answers: is the same product
 already listed by other sellers, which listings are they (with photos and prices), and is the price fair

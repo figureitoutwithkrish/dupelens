@@ -1,0 +1,28 @@
+{
+  "pca_variant": "shrink",
+  "dim": 32,
+  "k": 50,
+  "m1_threshold": 0.82,
+  "m2_threshold": 0.86,
+  "ablation_threshold": 0.82,
+  "component_threshold": 0.96,
+  "b2_feature": "tfidf_cos",
+  "b2_cutoff": 0.4348552106666169,
+  "m1_v2_threshold": 0.84,
+  "features_v2": [
+    "img_cos",
+    "txt_cos",
+    "tfidf_cos",
+    "phash_dist",
+    "num_match",
+    "num_conflict",
+    "mutual",
+    "rank_min",
+    "rank_max",
+    "len_ratio",
+    "dino_cos",
+    "colour_dist"
+  ],
+  "india_same_model_threshold": 0.9,
+  "colour_cut": 0.45
+}
