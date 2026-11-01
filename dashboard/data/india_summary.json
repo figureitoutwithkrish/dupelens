@@ -62,5 +62,35 @@
       0.36666666666666664,
       0.6333333333333333
     ]
+  },
+  "v2": {
+    "labeller": "Claude (AI assistant), blind, from titles and photos; no human labels",
+    "same": {
+      "n": 40,
+      "correct": 0.825,
+      "ci": [
+        0.7,
+        0.925
+      ],
+      "labels": {
+        "same": 33,
+        "variant": 4,
+        "different": 3
+      }
+    },
+    "variant": {
+      "n": 20,
+      "correct": 0.55,
+      "ci": [
+        0.3,
+        0.7512499999999989
+      ],
+      "labels": {
+        "variant": 11,
+        "same": 5,
+        "different": 4
+      }
+    },
+    "same_verdict_same_model_any_variant": 0.925
   }
 }

@@ -183,7 +183,7 @@
 
   <footer>
     How it works: CLIP reads the photo, a multilingual language model reads the title, both are compressed to 32 numbers each (PCA whitening), and a logistic-regression model trained on 34,250 Shopee listings scores each look-alike using photo, title, size/pack-number and neighbour clues. Price is never used to decide a match.<br>
-    "Same product" = model probability ≥ 0.99 with no size/pack conflict; "similar" = 0.82–0.99, often a colour or pack variant. Prices are 2023 Kaggle snapshots of Amazon India, not live. Photos load from Amazon's image servers. Indian match quality was checked on 60 held-out pairs labelled by Claude (an AI assistant), not by human annotators.
+    "Same product" = same model (probability ≥ 0.90) with matching colour, size and pack; "other colour/pack" = same model but a different colour, size, pack or combo. Prices are 2023 Kaggle snapshots of Amazon India, not live. Photos load from Amazon's image servers. Indian match quality was checked on 60 fresh held-out pairs labelled by Claude (an AI assistant), not by human annotators.
   </footer>
 </main>
 <div class="tip" id="tip"></div>
@@ -205,8 +205,8 @@ function render(r) {
   const box = $("#result"); box.hidden = false;
   const V = { already_listed: ["v-already", "=", r.same === 1 ? "Already listed by 1 other seller" : `Already listed by ${r.same} other sellers`,
                                "The model is very confident these are the same product (probability ≥ 0.99)."],
-              possible_variant: ["v-variant", "≈", `${r.similar} similar listing${r.similar === 1 ? "" : "s"} found`,
-                               "Close look-alikes, but probably a different colour, pack or model. Not counted as the same product."],
+              variant_listed: ["v-variant", "≈", `Same model listed in ${r.variants} other colour/pack version${r.variants === 1 ? "" : "s"}`,
+                               "Not an exact duplicate: the model sees the same product in another colour, size, pack or combo."],
               looks_new: ["v-new", "+", "Looks like a new listing", "No listing in the catalog is close enough to be the same product."] }[r.verdict];
   let gauge = "";
   if (r.typical != null) {
@@ -221,18 +221,19 @@ function render(r) {
   const pct = r.pct;
   const priceLine = r.typical == null ? "" : `<p class="sub" style="margin:0">Same product sells for ${rupee(r.min)}–${rupee(r.max)}; typical ${rupee(r.typical)}.
     ${pct != null ? `This listing is <b class="num">${Math.abs(pct)}% ${pct >= 0 ? "above" : "below"}</b> typical: ${pct > 20 ? "overpriced." : pct < -10 ? "a good deal." : "a fair price."}` : ""}</p>`;
+  const variantLine = r.variants && r.cheapestVariant ? `<p class="sub" style="margin:4px 0 0">Also sold in ${r.variants} other colour/pack version${r.variants === 1 ? "" : "s"}, from ${rupee(r.cheapestVariant)}.</p>` : "";
   box.innerHTML = `
     <div class="verdict ${V[0]}"><div class="ic" aria-hidden="true">${V[1]}</div><div><h3>${V[2]}</h3><p>${V[3]}</p></div></div>
     <div class="query">${r.query.image ? img(r.query.image) : `<div class="ph"></div>`}
       <div><div style="font-weight:600">${esc(r.query.title.slice(0, 160))}</div>
-      <div class="price num" style="margin:4px 0">${r.query.price ? rupee(r.query.price) : "No price given"}</div>${priceLine}</div></div>
+      <div class="price num" style="margin:4px 0">${r.query.price ? rupee(r.query.price) : "No price given"}</div>${priceLine}${variantLine}</div></div>
     ${gauge}
     ${r.matches.length ? `<h2 style="margin:0 0 10px">Matching listings</h2><div class="matches">${r.matches.map(m => `
       <div class="m">${img(m.image)}
         <div class="t">${esc(m.title)}</div>
         <div class="meta"><span class="price num">${rupee(m.price)}</span>
           ${m.pct != null ? `<span class="pill ${m.pct > 20 ? "up" : m.pct < -10 ? "down" : ""} num">${m.pct > 0 ? "+" : ""}${m.pct}% vs typical</span>` : ""}</div>
-        <div class="meta"><span class="pill ${m.kind === "same" ? "same" : "sim"}">${m.kind === "same" ? "Same product" : "Similar: variant?"} · ${(m.prob * 100).toFixed(m.prob > 0.999 ? 2 : 1)}%</span>
+        <div class="meta"><span class="pill ${m.kind === "same" ? "same" : "sim"}">${m.kind === "same" ? "Same product" : "Other colour/pack"} · ${(m.prob * 100).toFixed(m.prob > 0.999 ? 2 : 1)}%</span>
           ${m.url ? `<a href="${esc(m.url)}" target="_blank" rel="noopener">Amazon ↗</a>` : ""}</div>
       </div>`).join("")}</div>` : ""}`;
   box.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
@@ -242,7 +243,7 @@ function replay(i) {
   const L = CAT.listings, R = CAT.results[i], me = L[i];
   const matches = R.matches.map(([j, p, k]) => ({ ...L[j], prob: p, kind: k }));
   const samePrices = matches.filter(m => m.kind === "same").map(m => m.price);
-  render({ verdict: R.verdict, same: R.same, similar: R.similar, typical: R.typical, pct: R.pct,
+  render({ verdict: R.verdict, same: R.same, variants: R.variants, cheapestVariant: R.cheapest_variant, typical: R.typical, pct: R.pct,
            min: samePrices.length ? Math.min(...samePrices) : null, max: samePrices.length ? Math.max(...samePrices) : null,
            query: { title: me.title, price: me.price, image: me.image },
            matches: matches.map(m => ({ ...m, pct: R.typical ? Math.round(1000 * (m.price / R.typical - 1)) / 10 : null })) });
@@ -283,11 +284,10 @@ $("#tab-new").addEventListener("submit", async e => {
     const res = await fetch("/api/check", { method: "POST", body: fd });
     const r = await res.json();
     if (!res.ok) throw new Error(r.detail || "Check failed");
-    const same = r.matches.filter(m => m.label === "same product");
-    render({ verdict: r.verdict, same: r.same, similar: r.similar, typical: r.typical_price, pct: r.your_price_vs_typical_pct ?? null,
+    render({ verdict: r.verdict, same: r.same, variants: r.variants, cheapestVariant: r.cheapest_variant, typical: r.typical_price, pct: r.your_price_vs_typical_pct ?? null,
              min: r.min_price, max: r.max_price, query: { title, price, image: FILE ? $("#preview").src : url },
              matches: r.matches.map(m => ({ title: m.title, price: m.price, url: m.url, image: m.image_url, prob: m.prob,
-                                            kind: m.label === "same product" ? "same" : "similar", pct: m.pct_vs_typical })) });
+                                            kind: m.verdict, pct: m.pct_vs_typical })) });
   } catch (err) {
     const box = $("#result"); box.hidden = false;
     box.innerHTML = `<div class="verdict"><div class="ic" style="color:var(--bad)">!</div><div><h3>Could not check this listing</h3><p>${esc(err.message)}</p></div></div>`;
@@ -319,9 +319,9 @@ function ladder(rows) {
 
 // ---------- boot ----------
 Promise.all([fetch("data/catalog.json").then(r => r.json()), fetch("data/ladder.json").then(r => r.json()),
-             fetch("data/india_summary.json").then(r => r.json()),
+             fetch("data/india_summary.json").then(r => r.json()), fetch("data/model_v2.json").then(r => r.json()),
              fetch("/api/health").then(r => r.ok ? r.json() : null).catch(() => null)])
-.then(([cat, lad, summ, health]) => {
+.then(([cat, lad, summ, v2, health]) => {
   CAT = cat; LIVE = !!(health && health.live);
   const st = $("#status"); st.classList.add(LIVE ? "live" : "demo");
   st.lastElementChild.textContent = LIVE ? "Live model connected" : "Demo mode: catalog checks only";
@@ -329,14 +329,16 @@ Promise.all([fetch("data/catalog.json").then(r => r.json()), fetch("data/ladder.
   if (LIVE) setTab("new");
 
   const n = cat.listings.length, dup = cat.results.filter(r => r.verdict === "already_listed").length;
-  const over = cat.results.filter(r => r.pct != null && r.pct > 20).length, m1 = lad.find(r => r.step === "M1"), ho = summ.holdout;
+  const over = cat.results.filter(r => r.pct != null && r.pct > 20).length, m1 = lad.find(r => r.step === "M1"), ho = summ.v2.same;
   $("#kpis").innerHTML = [
     [n.toLocaleString("en-IN"), "listings in the catalog"],
     [Math.round(100 * dup / n) + "%", `already listed by another seller (${dup} of ${n})`, true],
     [over, "listings priced >20% above the typical price"],
     [m1.f1.toFixed(2), `model F1 on unseen Shopee products (CI ${m1.f1_ci_low.toFixed(2)}–${m1.f1_ci_high.toFixed(2)})`, true],
   ].map(([v, l, a]) => `<div class="kpi"><div class="v num ${a ? "accent" : ""}">${v}</div><div class="l">${l}</div></div>`).join("");
-  $("#india-acc").innerHTML = `On Amazon India, <b>${Math.round(ho.precision * 100)}%</b> of "same product" matches were exactly the same item in the same colour (95% CI ${Math.round(ho.precision_ci[0] * 100)}–${Math.round(ho.precision_ci[1] * 100)}%, ${ho.n} held-out pairs). Most others are the same model in another colour or pack.`;
+  const nv = v2.M1_v2, ov = v2.M1;
+  $("#india-acc").innerHTML = `Upgraded model (adds DINOv2 exact-item photo matching and a colour check): Shopee validation F1 <b>${nv.f1.toFixed(3)}</b> vs ${ov.f1.toFixed(3)} before.<br>
+    On fresh Amazon India pairs, <b>${Math.round(ho.correct * 100)}%</b> of "same product" verdicts were exactly the same item, same colour and pack (95% CI ${Math.round(ho.ci[0] * 100)}–${Math.round(ho.ci[1] * 100)}%, ${ho.n} pairs; ${Math.round(summ.v2.same_verdict_same_model_any_variant * 100)}% were at least the same model). The earlier model scored ${Math.round(summ.holdout.precision * 100)}%.`;
 
   const gaps = cat.results.map((r, i) => ({ i, ...r })).filter(r => r.pct != null && r.same >= 2).sort((a, b) => b.pct - a.pct).slice(0, 7);
   const maxPct = Math.max(...gaps.map(g => g.pct), 1);

@@ -119,3 +119,14 @@ Affiliate API for a fresh Indian catalog once the user has an affiliate account.
   grids results/labelling/v2_*.jpg, hidden key cache/v2_key.csv) -> label column `label` with
   same / variant / different -> `--stats` (writes india_summary.json "v2"). Then wire classify() into
   src/service.py (Matcher must also compute dino + colour for new listings via src.extra) and the dashboard.
+- DONE step 2: M1_v2 val F1 0.8643 [0.8549, 0.8737], paired +0.0215 [+0.0168, +0.0262] vs M1 (0.8429);
+  no-DINO +0.0073, no-colour +0.0181. Coefs: tfidf 1.74, dino_cos 1.37, colour_dist -0.43.
+- DONE step 1: calibration on 210 labels -> same-model threshold 0.90, colour cut 0.45 (cache/final_config_v2.json).
+  Fresh blind sheet results/v2_sheet.csv (60): "same" correct 33/40 = 0.825 [0.70, 0.925] (same model 37/40);
+  "variant" correct 11/20 = 0.55 [0.30, 0.75]. Stored in results/json/india_summary.json "v2".
+- DONE wiring: src/verdict.py (rules, no faiss/torch), src/service.py now uses M1_v2 + verdicts; app restarted;
+  catalog.json rebuilt (434 same / 88 variant / 176 new; 343 typical price; 62 > 20% above); dashboard shows
+  verdict, "other colour/pack" pills, v2 accuracy (dashboard/data/model_v2.json from src.export). README updated.
+- NEXT ideas (ask user): improve variant precision (55%); more Indian labels / human check of AI labels; grow
+  catalog (Flipkart Affiliate API needs an account; Amazon Reviews 2023 for variant training data); host the
+  live checker online (models ~1.6 GB: needs a Python host, e.g. Hugging Face Spaces).

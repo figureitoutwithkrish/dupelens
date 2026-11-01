@@ -11,7 +11,6 @@ Run: python -m src.variant --calibrate | --sheet | --stats
 """
 import faiss  # noqa: F401  import first (OpenMP, see config.py)
 import json
-import re
 import sys
 
 import joblib
@@ -23,22 +22,10 @@ from src.data import load_cached
 from src.extra import colour_dist
 from src.features import load_tfidf
 from src.india import make_grids, score_site
+from src.verdict import classify, combo_mismatch
 
-COMBO = re.compile(r"\bcombo\b|\bkit\b|\bset of \d+|\bpack of \d+|\+|\b\d+\s*in\s*1\b", re.IGNORECASE)
 PAIRS_CSV = config.CACHE_DIR / "india_pairs_v2.csv"
 CONFIG_V2 = config.CACHE_DIR / "final_config_v2.json"
-
-
-def combo_mismatch(title_a, title_b):
-    """True when exactly one title describes a combo, kit, set/pack or N-in-1 product."""
-    return bool(COMBO.search(title_a)) != bool(COMBO.search(title_b))
-
-
-def classify(prob, conflict, colour_d, combo, cfg):
-    """Vectorised verdict: 'same', 'variant' or 'different' for each pair."""
-    same_model = prob >= cfg["india_same_model_threshold"]
-    differs = conflict.astype(bool) | combo.astype(bool) | (colour_d > cfg["colour_cut"])
-    return np.where(same_model & ~differs, "same", np.where(same_model, "variant", "different"))
 
 
 def pair_table():

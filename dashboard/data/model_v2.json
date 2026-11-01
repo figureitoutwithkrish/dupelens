@@ -1,0 +1,26 @@
+{
+  "M1": {
+    "f1": 0.8429,
+    "f1_ci_low": 0.8328,
+    "f1_ci_high": 0.8524,
+    "notes": "train pairs 826848, positive share 0.0604; val pairs 159193"
+  },
+  "M1_v2": {
+    "f1": 0.8643,
+    "f1_ci_low": 0.8549,
+    "f1_ci_high": 0.8737,
+    "notes": "vs M1 on same pairs: diff +0.0215, 95% CI [+0.0168, +0.0262]"
+  },
+  "M1_v2_no_dino": {
+    "f1": 0.8501,
+    "f1_ci_low": 0.8407,
+    "f1_ci_high": 0.8595,
+    "notes": "vs M1 on same pairs: diff +0.0073, 95% CI [+0.0045, +0.0102]"
+  },
+  "M1_v2_no_colour": {
+    "f1": 0.8609,
+    "f1_ci_low": 0.8515,
+    "f1_ci_high": 0.8696,
+    "notes": "vs M1 on same pairs: diff +0.0181, 95% CI [+0.0136, +0.0226]"
+  }
+}

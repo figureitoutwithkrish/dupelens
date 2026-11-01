@@ -2,7 +2,7 @@
 
 **Give it an Amazon listing (title + photo, optionally your price). It tells you whether the same product is already listed by other sellers, shows those listings with their photos and prices, and says whether the price is fair.**
 
-A logistic-regression matcher over image, text and variant-aware features reaches **per-listing F1 0.838 (95% CI 0.825–0.851)** on a held-out set of Shopee product groups, against 0.461 for a self-only floor and 0.794 for the best single feature. Applied to Amazon India personal-care appliances, it finds the same product listed by other sellers for 417 of 698 listings and flags 61 listings priced more than 20% above the typical price.
+A logistic-regression matcher over image, text and variant-aware features reaches **per-listing F1 0.838 (95% CI 0.825–0.851)** on a held-out set of Shopee product groups, against 0.461 for a self-only floor and 0.794 for the best single feature. An upgraded model (v2: adds DINOv2 exact-item photo matching and a colour check) raises Shopee validation F1 from 0.843 to 0.864 and, on fresh Amazon India pairs, is right **82.5% of the time (95% CI 70–92.5%)** when it says two listings are the same product, up from 50%. It also tells exact duplicates apart from colour/pack variants.
 
 **Live dashboard: https://dupelens.vercel.app**
 
@@ -58,7 +58,24 @@ F1 is per listing with the self-match counted (Kaggle convention); CIs bootstrap
 
 ![Recall vs dims](results/plots/recall_vs_dims.png) ![PR curve](results/plots/pr_curve_test.png) ![Explained variance](results/plots/explained_variance.png)
 
-## India price demo (Amazon India, Personal Care Appliances, 2023 snapshot)
+## Model v2: exact-item photos, colour, and a three-way verdict
+
+The audit found that most wrong Indian matches were the same model in another colour or pack, and that CLIP recognises *what kind of thing* is in a photo better than *which exact item*. v2 adds two pair features and a three-way verdict:
+
+- **dino_cos:** cosine of DINOv2-small image vectors (384-d), a model trained to recognise the same object across photos.
+- **colour_dist:** 1 − histogram intersection of hue × saturation of the product pixels (near-white background ignored).
+- **Verdict:** *same* (same model, same colour/size/pack) · *variant* (same model, other colour, size, pack or combo) · *different*. The model probability decides "same model" (≥ 0.90); colour distance > 0.45, a size/pack conflict, or a combo mismatch turns it into a variant. These two cut-offs were chosen on the 210 earlier Indian labels only.
+
+| Shopee validation (same candidate pairs) | F1 | 95% CI | vs M1 (paired) |
+|---|---|---|---|
+| M1 (original) | 0.843 | 0.833–0.852 | – |
+| **M1_v2** | **0.864** | 0.855–0.874 | +0.022 (+0.017 to +0.026) |
+| v2 without DINOv2 | 0.850 | 0.841–0.860 | +0.007 |
+| v2 without colour | 0.861 | 0.852–0.870 | +0.018 |
+
+The Shopee test split was already used once, so v2 is compared on validation and checked on a **fresh** Indian held-out set (60 pairs never labelled before, blind): **"same product" verdicts were correct for 33 of 40 (82.5%, CI 70–92.5%)** and at least the same model for 37 of 40; "variant" verdicts were correct for 11 of 20 (55%, CI 30–75%; 5 were actually identical, 4 different products). With v2, 434 of 698 catalog listings are already listed as the same product by another seller, 88 only as a colour/pack variant, 176 look new; 343 have a typical price and 62 are priced more than 20% above it.
+
+## India price demo (v1 model) (Amazon India, Personal Care Appliances, 2023 snapshot)
 
 - **Category choice.** Jewellery was tried first; its titles are templated and only 1 of 150 sampled predicted matches was truly the same product. A duplicate probe (`results/phase1_search/duplicate_probe.py`) then found Personal Care Appliances has by far the most true duplicate listings (599 pairs with near-identical photo and title under different ASINs). 698 listings kept after dropping 372 with dead images.
 - **Distribution shift.** At 32 dims the frozen Shopee PCA explains 0.503 of Indian image variance (Shopee test 0.479) and 0.570 of text variance (0.563): little shift in the embeddings, but the Shopee threshold over-matches inside one narrow category.
@@ -90,6 +107,9 @@ kaggle competitions download -c shopee-product-matching -p data/ && unzip data/s
 .venv/bin/python -m src.india --frozen      # India calibration sample
 .venv/bin/python -m src.india --matches     # India price view + held-out sample
 .venv/bin/python -m src.export              # plots + dashboard data
+.venv/bin/python -m src.extra               # v2: DINOv2 + colour features
+.venv/bin/python -m src.train_v2            # v2 model, compared on validation
+.venv/bin/python -m src.variant --calibrate  # v2 verdict cut-offs on earlier labels (then --sheet, --stats)
 .venv/bin/python -m src.service             # demo results for every catalog listing
 .venv/bin/python -m src.app                 # live app at http://127.0.0.1:8000
 .venv/bin/python -m http.server 8765 --directory dashboard   # open http://localhost:8765 (live: https://dupelens.vercel.app)
@@ -106,4 +126,4 @@ kaggle competitions download -c shopee-product-matching -p data/ && unzip data/s
 
 ## Resume bullet
 
-Built DupeLens, a duplicate-listing classifier trained on 34k Shopee listings (product-group split) using image, text, and variant-aware features; logistic regression reached test F1 0.838 (95% CI 0.825–0.851) vs 0.794 for the best single-feature baseline, with number-token features adding 0.45 points. Compressed image and text embeddings from 512/768 to 32 dimensions each with PCA and shrinkage whitening, keeping validation F1 at 0.843 vs 0.846 at full dimension. Applied to 698 Amazon India personal-care listings at 50% precision on held-out labelled matches, flagging 61 listings priced more than 20% above the typical price for the same product; shipped as an app that checks any new listing (title + photo) in under half a second once loaded.
+Built DupeLens, a duplicate-listing classifier trained on 34k Shopee listings (product-group split) using image, text, and variant-aware features; logistic regression reached test F1 0.838 (95% CI 0.825–0.851) vs 0.794 for the best single-feature baseline, with number-token features adding 0.45 points. Compressed image and text embeddings from 512/768 to 32 dimensions each with PCA and shrinkage whitening, keeping validation F1 at 0.843 vs 0.846 at full dimension. Added DINOv2 and colour features (validation F1 0.843 → 0.864) and a same/variant/different verdict that is 82.5% precise on fresh blind-labelled Amazon India pairs (up from 50%), flagging 62 of 698 listings priced more than 20% above the typical price for the same product; shipped as an app that checks any new listing (title + photo) in under half a second once loaded.

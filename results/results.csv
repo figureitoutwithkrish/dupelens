@@ -102,3 +102,6 @@ M1,logreg,all,shrink,32,50,test,0.8379,0.8254,0.8509,0.8329,0.7167,0.9061,0.82,"
 M2,mlp_32_16,all,shrink,32,50,test,0.8425,0.8304,0.8553,0.846,0.7148,,0.86,
 ablation,logreg,all minus number tokens,shrink,32,50,test,0.8334,0.8209,0.846,0.8266,0.7082,,0.82,
 M1_components,logreg + components,all,shrink,32,50,test,0.816,0.8019,0.8298,0.7596,0.8167,,0.96,"connected components, number-conflict edges dropped"
+M1_v2,logreg,"dino_cos,colour_dist",shrink,32,50,val,0.8643,0.8549,0.8737,0.8421,0.8049,,0.84,"vs M1 on same pairs: diff +0.0215, 95% CI [+0.0168, +0.0262]"
+M1_v2_no_dino,logreg,colour_dist,shrink,32,50,val,0.8501,0.8407,0.8595,0.8256,0.7819,,0.82,"vs M1 on same pairs: diff +0.0073, 95% CI [+0.0045, +0.0102]"
+M1_v2_no_colour,logreg,dino_cos,shrink,32,50,val,0.8609,0.8515,0.8696,0.814,0.8244,,0.8,"vs M1 on same pairs: diff +0.0181, 95% CI [+0.0136, +0.0226]"

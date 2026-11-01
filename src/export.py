@@ -86,6 +86,12 @@ def plots_and_json():
     (data / "errors.json").write_text((js / "error_sample.json").read_text())
     (data / "india_matches.json").write_text((js / "india_matches.json").read_text())
     (data / "india_summary.json").write_text((js / "india_summary.json").read_text())
+    # v2 model (DINOv2 + colour), compared on Shopee VALIDATION (test is used up).
+    val = res[(res.split == "val") & res.step.isin(["M1", "M1_v2", "M1_v2_no_dino", "M1_v2_no_colour"])]
+    val = val[(val.step != "M1") | (val.dim.astype(str) == "32")]
+    v2 = {r.step: dict(f1=r.f1, f1_ci_low=r.f1_ci_low, f1_ci_high=r.f1_ci_high, notes=None if pd.isna(r.notes) else r.notes)
+          for r in val.itertuples()}
+    (data / "model_v2.json").write_text(json.dumps(v2, indent=2))
     print("wrote plots to", plots, "and dashboard data to", data)
 
 
