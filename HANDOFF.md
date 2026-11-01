@@ -108,3 +108,14 @@ Affiliate API for a fresh Indian catalog once the user has an affiliate account.
 
 ## 9. Progress log (update after every milestone)
 - 2026-11-01: brief written; database research done (section 8). Next: Step 2.
+- Step 2 code: src/extra.py (DINOv2 small + colour histogram -> cache/{shopee,india}_{dino,colour}.npy;
+  `python -m src.extra`, ~8 min, log cache/extra.log) and src/train_v2.py (`python -m src.train_v2`:
+  M1_v2 + ablations on Shopee VAL, paired diff vs M1; writes cache/models_v2.joblib,
+  cache/final_config_v2.json, results/json/m1_v2_coefficients.json). If extra.npy files are missing,
+  rerun src.extra first.
+- Step 1 code: src/variant.py. Order: `python -m src.variant --calibrate` (scores all India pairs with
+  M1_v2 -> cache/india_pairs_v2.csv; picks same-model threshold + colour cut on the 210 earlier labels)
+  -> `--sheet` (fresh blind sheet results/v2_sheet.csv, 40 predicted-same + 20 predicted-variant, photo
+  grids results/labelling/v2_*.jpg, hidden key cache/v2_key.csv) -> label column `label` with
+  same / variant / different -> `--stats` (writes india_summary.json "v2"). Then wire classify() into
+  src/service.py (Matcher must also compute dino + colour for new listings via src.extra) and the dashboard.
