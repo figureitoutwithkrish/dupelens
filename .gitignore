@@ -1,5 +1,5 @@
 # data and caches are large and licence-restricted (blueprint section 6)
-data/
+/data/
 cache/
 .venv/
 __pycache__/
