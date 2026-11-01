@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DupeLens</title>
+<style>
+  :root {
+    --bg: #f7f6f2; --card: #ffffff; --ink: #1d1d1b; --muted: #6b6a66; --line: #e4e2dc;
+    --accent: #1f6f5c; --accent-soft: #e3f1ec; --warn: #b5541c; --warn-soft: #fbeee5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #151514; --card: #1f1f1d; --ink: #ecebe6; --muted: #a09f99; --line: #34332f;
+      --accent: #5cc3a6; --accent-soft: #1e3530; --warn: #f0965f; --warn-soft: #3a2619;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 48px; }
+  h1 { font-size: 30px; margin: 0 0 4px; letter-spacing: -0.02em; }
+  h2 { font-size: 20px; margin: 40px 0 8px; }
+  p.lead { color: var(--muted); margin: 0 0 24px; max-width: 760px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .card .k { font-size: 26px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .card .l { color: var(--muted); font-size: 13px; }
+  input[type=search] { width: 100%; padding: 11px 14px; font-size: 15px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); }
+  .result { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-top: 10px; }
+  .result .t { font-weight: 600; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px 18px; color: var(--muted); font-size: 13px; margin: 4px 0 8px; }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 12px; background: var(--accent-soft); color: var(--accent); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  tr.best td { background: var(--accent-soft); }
+  .scroll { overflow-x: auto; }
+  .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+  svg { width: 100%; height: auto; display: block; }
+  .axis { stroke: var(--line); } .grid { stroke: var(--line); stroke-dasharray: 2 3; }
+  .lab { fill: var(--muted); font-size: 11px; }
+  .matches { font-size: 13px; margin: 6px 0 0; padding-left: 18px; }
+  .matches li { margin: 2px 0; }
+  a { color: var(--accent); }
+  footer { margin-top: 48px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 14px; }
+  .note { color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>DupeLens</h1>
+  <p class="lead">The same product is often listed many times by different sellers at different prices. DupeLens reads each listing's photo and title, finds the other listings of the same product, and shows how its price compares with the typical (median) price.</p>
+  <div class="cards" id="cards"></div>
+
+  <h2>Price lookup: Amazon India, personal care appliances</h2>
+  <p class="note" id="india-note"></p>
+  <input type="search" id="q" placeholder="Search a product, e.g. hair straightener comb, hair dryer 2000W, auto curler">
+  <div id="results"></div>
+
+  <h2>How accurate is the model (Shopee test set, used once)</h2>
+  <p class="note">Per-listing F1 (Kaggle convention, self-match counted) with 95% CIs from bootstrapping product groups. Trained and tuned on separate product groups; no product appears in two splits.</p>
+  <div class="scroll"><table id="ladder"></table></div>
+
+  <h2>Compression and the precision-recall trade-off</h2>
+  <div class="charts">
+    <div class="card"><div class="l">Candidate recall vs dimensions per modality (validation, k=50)</div><svg id="sweep" viewBox="0 0 360 240"></svg></div>
+    <div class="card"><div class="l">Precision vs recall of the main model (Shopee test)</div><svg id="pr" viewBox="0 0 360 240"></svg></div>
+  </div>
+
+  <h2>Where it fails</h2>
+  <div class="scroll"><table id="errors"></table></div>
+
+  <footer>Model trained and tested on Shopee Kaggle data. Prices are Kaggle snapshots (Amazon India, 2023), not live. No listing photos shown. Indian match labels and error tags were made by Claude, an AI assistant, from titles and photos, not by human annotators.</footer>
+</main>
+<script>
+const fmt = (x, d = 3) => x === null || x === undefined ? "–" : Number(x).toFixed(d);
+const rupee = x => "₹" + Math.round(x).toLocaleString("en-IN");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const NAMES = { B0: "Self-only floor", B1: "Exact image hash", B2: "Best single feature (TF-IDF)", ablation: "M1 without number tokens",
+                M1: "M1 logistic regression", M2: "M2 small MLP", M1_components: "M1 + grouping into components" };
+
+function line(svg, series, xs, opts) {
+  const W = 360, H = 240, L = 40, R = 10, T = 12, B = 30;
+  const [x0, x1] = opts.x, [y0, y1] = opts.y;
+  const sx = v => L + (opts.logx ? (Math.log2(v) - Math.log2(x0)) / (Math.log2(x1) - Math.log2(x0)) : (v - x0) / (x1 - x0)) * (W - L - R);
+  const sy = v => H - B - (v - y0) / (y1 - y0) * (H - T - B);
+  let s = "";
+  for (const t of opts.yt) s += `<line class="grid" x1="${L}" x2="${W - R}" y1="${sy(t)}" y2="${sy(t)}"/><text class="lab" x="${L - 6}" y="${sy(t) + 4}" text-anchor="end">${t}</text>`;
+  for (const t of opts.xt) s += `<text class="lab" x="${sx(t)}" y="${H - B + 16}" text-anchor="middle">${t}</text>`;
+  s += `<text class="lab" x="${(W + L) / 2}" y="${H - 2}" text-anchor="middle">${opts.xl}</text>`;
+  series.forEach(se => {
+    const pts = se.pts.map(p => `${sx(p[0])},${sy(p[1])}`).join(" ");
+    s += `<polyline fill="none" stroke="${se.color}" stroke-width="2" ${se.dash ? 'stroke-dasharray="4 3"' : ""} points="${pts}"/>`;
+    if (se.label) { const p = se.pts[se.pts.length - 1]; s += `<text class="lab" x="${sx(p[0]) - 4}" y="${sy(p[1]) - 6}" text-anchor="end" fill="${se.color}">${se.label}</text>`; }
+  });
+  svg.innerHTML = s;
+}
+
+Promise.all(["ladder", "pca", "pr_curve", "errors", "india_matches", "india_summary"].map(f => fetch(`data/${f}.json`).then(r => r.json())))
+.then(([ladder, pca, pr, errors, matches, summary]) => {
+  const m1 = ladder.find(r => r.step === "M1"), b0 = ladder.find(r => r.step === "B0");
+  const ho = summary.holdout || {};
+  const spreads = matches.filter(m => m.typical_price).map(m => Math.abs(m.pct_vs_typical));
+  document.getElementById("cards").innerHTML = [
+    [fmt(m1.f1), `Shopee test F1 (95% CI ${fmt(m1.f1_ci_low)}–${fmt(m1.f1_ci_high)}), vs ${fmt(b0.f1)} self-only floor`],
+    ["32", "dims per modality after PCA whitening (from 512 image / 768 text)"],
+    [ho.precision !== undefined ? Math.round(ho.precision * 100) + "%" : "–", `precision of Indian matches on ${ho.n || "–"} held-out labelled pairs`],
+    [matches.filter(m => m.above_20pct).length, "Indian listings priced more than 20% above the typical price"],
+  ].map(([k, l]) => `<div class="card"><div class="k">${k}</div><div class="l">${esc(l)}</div></div>`).join("");
+
+  document.getElementById("india-note").textContent =
+    `${matches.length} of ${summary.sites.amazon.listings} listings have at least one high-confidence match (probability ≥ ${ho.threshold}). ` +
+    `On held-out pairs, ${Math.round((ho.precision || 0) * 100)}% of matches were the same product in the same colour (95% CI ${Math.round(ho.precision_ci[0] * 100)}–${Math.round(ho.precision_ci[1] * 100)}%); most of the rest are colour variants or different combo packs of the same model.`;
+
+  const box = document.getElementById("results"), q = document.getElementById("q");
+  const show = () => {
+    const words = q.value.toLowerCase().split(/\s+/).filter(Boolean);
+    let hits = matches.filter(m => words.every(w => m.title.toLowerCase().includes(w)));
+    hits = hits.sort((a, b) => (b.typical_price ? 1 : 0) - (a.typical_price ? 1 : 0) || b.matches.length - a.matches.length).slice(0, 12);
+    box.innerHTML = hits.map(m => {
+      const pct = m.pct_vs_typical;
+      const tag = m.typical_price === null ? `<span class="pill">1 other listing</span>`
+        : m.above_20pct ? `<span class="pill warn">${pct > 0 ? "+" : ""}${pct}% vs typical</span>` : `<span class="pill">${pct > 0 ? "+" : ""}${pct}% vs typical</span>`;
+      return `<div class="result"><div class="t">${esc(m.title.slice(0, 140))}</div>
+        <div class="row"><span>Price ${rupee(m.price)}</span>${m.typical_price ? `<span>Typical ${rupee(m.typical_price)}</span>` : ""}
+        <span>Range ${rupee(m.min_price)}–${rupee(m.max_price)}</span><span>${m.matches.length} matching listing${m.matches.length > 1 ? "s" : ""}</span>${tag}
+        <a href="${esc(m.url)}" target="_blank" rel="noopener">listing</a></div>
+        <ul class="matches">${m.matches.slice(0, 5).map(x => `<li>${rupee(x.price)} · ${esc(x.title.slice(0, 90))} <span class="note">(${fmt(x.prob, 3)})</span></li>`).join("")}</ul></div>`;
+    }).join("") || `<p class="note">No matching listings.</p>`;
+  };
+  q.addEventListener("input", show); show();
+
+  document.getElementById("ladder").innerHTML = "<tr><th>Model</th><th>Test F1</th><th>95% CI</th><th>Pair precision</th><th>Pair recall</th></tr>" +
+    ladder.map(r => `<tr class="${r.step === "M1" ? "best" : ""}"><td>${NAMES[r.step] || r.step}</td><td>${fmt(r.f1)}</td><td>${fmt(r.f1_ci_low)}–${fmt(r.f1_ci_high)}</td><td>${fmt(r.pair_precision)}</td><td>${fmt(r.pair_recall)}</td></tr>`).join("");
+
+  const colors = { plain: "#8a8986", whiten: "#3b7dd8", shrink: "#1f6f5c" };
+  const sw = ["plain", "whiten", "shrink"].map(v => ({ label: v, color: colors[v],
+    pts: pca.sweep.filter(r => r.pca_variant === v).map(r => [Number(r.dim), r.cand_recall]).sort((a, b) => a[0] - b[0]) }));
+  const raw = pca.sweep.find(r => r.pca_variant === "none").cand_recall;
+  sw.push({ label: "raw", color: "#b5541c", dash: true, pts: [[32, raw], [256, raw]] });
+  line(document.getElementById("sweep"), sw, null, { x: [32, 256], y: [0.88, 1.0], logx: true, xt: [32, 64, 128, 256], yt: [0.9, 0.95, 1.0], xl: "dims per modality" });
+  line(document.getElementById("pr"), [{ color: "#1f6f5c", pts: pr.map(p => [p.recall, p.precision]).sort((a, b) => a[0] - b[0]) }], null,
+       { x: [0, 1], y: [0, 1], xt: [0, 0.25, 0.5, 0.75, 1], yt: [0, 0.5, 1], xl: "pairwise recall" });
+
+  const pick = errors.filter((e, i) => i % 6 === 0).slice(0, 5);
+  document.getElementById("errors").innerHTML = "<tr><th>Error</th><th>Type</th><th>Listing A</th><th>Listing B</th></tr>" +
+    pick.map(e => `<tr><td>${e.kind === "miss" ? "missed match" : "false match"}</td><td>${esc(e.tag)}</td><td>${esc(e.title_a.slice(0, 70))}</td><td>${esc(e.title_b.slice(0, 70))}</td></tr>`).join("");
+});
+</script>
+</body>
+</html>

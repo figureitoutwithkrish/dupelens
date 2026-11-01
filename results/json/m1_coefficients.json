@@ -1,0 +1,12 @@
+{
+  "img_cos": 0.4177,
+  "txt_cos": -0.1874,
+  "tfidf_cos": 2.0088,
+  "phash_dist": -0.5373,
+  "num_match": 0.1317,
+  "num_conflict": -0.5308,
+  "mutual": 0.1441,
+  "rank_min": -0.0362,
+  "rank_max": -0.2113,
+  "len_ratio": -0.04
+}

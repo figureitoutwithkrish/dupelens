@@ -1,0 +1,66 @@
+{
+  "category": {
+    "amazon": "Personal Care Appliances",
+    "flipkart": null
+  },
+  "sites": {
+    "amazon": {
+      "listings": 698,
+      "candidate_pairs": 26530,
+      "predicted_match_pairs": 7397,
+      "groups_2plus": 27,
+      "groups_3plus": 11,
+      "listings_in_groups": 504,
+      "groups_over_15": 3,
+      "largest_group": 366,
+      "listings_above_20pct": 170
+    }
+  },
+  "shift_check": {
+    "img": {
+      "shopee_test": 0.47915696124802026,
+      "india": 0.5027939964375541,
+      "dim": 32
+    },
+    "txt": {
+      "shopee_test": 0.5632535386057342,
+      "india": 0.5701328962063893,
+      "dim": 32
+    }
+  },
+  "strata_sizes": {
+    "H": 5851,
+    "B": 1546,
+    "R": 890
+  },
+  "h_cut": 0.9,
+  "labelling": {
+    "labeller": "Claude (AI assistant), from titles and photos; no human labels",
+    "n_labelled": {
+      "H": 50,
+      "B": 50,
+      "R": 50
+    },
+    "precision_H": 0.46,
+    "precision_B": 0.12,
+    "weighted_precision": 0.3889387589563337,
+    "weighted_precision_ci": [
+      0.2707169798566986,
+      0.504818169528187
+    ],
+    "r_share_true_matches": 0.04,
+    "by_site": {
+      "amazon": 0.29
+    }
+  },
+  "holdout": {
+    "labeller": "Claude (AI assistant), blind, from titles and photos; no human labels",
+    "threshold": 0.99,
+    "n": 60,
+    "precision": 0.5,
+    "precision_ci": [
+      0.36666666666666664,
+      0.6333333333333333
+    ]
+  }
+}

@@ -1,0 +1,80 @@
+
+amazon/Gold & Diamond Jewellery: titles repeated on >1 listing = 935; share of those with different prices = 0.84
+                                                           size      min      max
+name                                                                             
+PC Jeweller 22k (916) Yellow Gold Ring for Women            373   8816.0  45112.0
+Zeya Yellow Gold Ring                                       339   7028.0  45327.0
+Avsar 18k (750) Yellow Gold and Diamond Ring for Women      254  10071.0  45429.0
+Avsar 18k (750) Yellow Gold and Diamond Pendant for Women   133   4600.0  28229.0
+Avsar 14k (585) Yellow Gold Ring for Women                  126   8238.0  22226.0
+
+amazon/Fashion & Silver Jewellery: titles repeated on >1 listing = 400; share of those with different prices = 0.47
+                                                                                                                               size    min    max
+name                                                                                                                                             
+MEENAZ 2 Vati Wati Mangalsutra For Women Girls Temple South Indian Traditional 1 Gram Gold Stylish Maharashtrian Long Doub...    13  283.0  399.0
+Brado Jewellery Traditional One Gram Gold Plated Combo of 4 Necklace Pendant 30 inch Long and 18 inch Short Mangalsutra/ta...    12  189.0  234.0
+BALAJI GOLD Assamese Traditional Jewellery ||Assamese Jewllerry For Women And Girls                                               8  394.0  899.0
+LOVELY DREAMS 1 Gram Gold Plated Fashion Jewellery Traditional Covering Muruku Thali Saradu Chain for Women & Girls               8  499.0  499.0
+FLINGDOM Clip On Earrings - Stunning Gold-Plated Non Piercing Earrings for Women | Handmade Fake Earrings without Piercing...     8  249.0  599.0
+
+amazon/Shirts: titles repeated on >1 listing = 1166; share of those with different prices = 0.52
+                                    size    min     max
+name                                                   
+Arrow Men Shirt                      228  720.0  3509.0
+Peter England Men Shirt              194  629.0  1609.0
+Peter England Men's Slim Fit Shirt   128  589.0  1645.0
+Allen Solly Men Shirt                108  679.0  3158.0
+Arrow Men's Slim Fit Shirt           105  619.0  1659.0
+
+amazon/Backpacks: titles repeated on >1 listing = 30; share of those with different prices = 0.47
+                                                                                                                               size    min     max
+name                                                                                                                                              
+Backpack For Women's/Girls                                                                                                       47  999.0   999.0
+VOXX School Bag for K ids Plush Backpack Cartoon Toy | Children's Gifts Boy Girl Baby School Bag for Kids (BLUE PANDA AND ...     7  350.0   350.0
+FunClub Small Bag for Kids Backpack for Kids 3D Cartoon School Bag Toddler Backpack Bag for Girls Hard Shell Backpack for ...     6  649.0   649.0
+SS TRADING COMPANY | |35 L Casual Waterproof Laptop Bag-Backpack for Men Women Boys Girls/Office School College Teens & St...     5  999.0   999.0
+EXTREME MACHINE Waterproof Travel Backpack for Hiking Trekking Camping Rucksack with Tourist Mountain Climbing Bag for Men...     4  599.0  2699.0
+
+amazon/Kitchen & Dining: titles repeated on >1 listing = 4; share of those with different prices = 0.75
+                                                                                                                               size     min     max
+name                                                                                                                                               
+ABOUT SPACE 4 Litre Glass Juice Dispenser - Water Pitcher for Detox Water - Mason Jar - Counter Table Top Infused Water & ...     2   854.0   999.0
+IBELL Stainless Steel Idly Pot with Steamer and Mini 3 Idli Plates , Silver                                                       2  1303.0  1602.0
+Saiyam Stainless Steel Digital Electronic Kitchen Scale Weighing Machine for Food, Baking, Cooking for Home Use, Health an...     2   699.0   699.0
+The Better Home 1000 Copper Water Bottle (900ml) | 100% Pure Copper Bottle | BPA Free & Non Toxic Water Bottle with Anti O...     2   849.0   949.0
+
+flipkart/Jewellery: titles repeated on >1 listing = 470; share of those with different prices = 0.80
+                                                     size    min    max
+product_name                                                           
+Voylla Metal, Alloy Necklace                           66  153.0  495.0
+Fashion Jewellery Alloy Necklace                       39  239.0  259.0
+Vaishali Bindi and Bangles Brass, Copper Bangle Set    37  249.0  499.0
+Kuhuk Plastic Bangle Set                               37  152.0  701.0
+Jewel Paradise Brass Plated Brass Necklace             36  399.0  399.0
+
+flipkart/Clothing: titles repeated on >1 listing = 878; share of those with different prices = 0.57
+                                                             size    min    max
+product_name                                                                   
+S4S Stylish Women's Push-up Bra                                94  149.0  459.0
+Nimya Solid Men's Polo Neck T-Shirt                            50  299.0  899.0
+S4S Comfortable Women's Full Coverage Bra                      45  122.0  419.0
+Grafion by Grafion - Comfort Feel Women's Full Coverage Bra    44  279.0  499.0
+Grafion Comfortable Women's Full Coverage Bra                  40   59.0  169.0
+
+flipkart/Mobiles & Accessories: titles repeated on >1 listing = 46; share of those with different prices = 0.30
+                                                            size     min     max
+product_name                                                                    
+TheLostPuppy Back Cover for Apple iPad Air                   134   599.0   599.0
+TheLostPuppy Back Cover for Apple iPad Air 2                  95   599.0   599.0
+DailyObjects Back Cover for Apple iPad 2/3/4                  52  1685.0  1685.0
+Theskinmantra Sleeve for All versions of Apple ipad           43   549.0   549.0
+DailyObjects Back Cover for Apple iPad Mini/Retina Display    42  1685.0  1685.0
+
+flipkart/Kitchen & Dining: titles repeated on >1 listing = 17; share of those with different prices = 0.76
+                                               size    min    max
+product_name                                                     
+Pratha Wheel Pizza Cutter                         4  180.0  470.0
+CookAid Stainless Steel with Lid Kadhai 1.2 L     3  759.0  759.0
+nayasa whip 1200 ml Bottle                        3  349.0  349.0
+Go Hooked Rocker Pizza Cutter                     2  279.0  279.0
+Go Hooked Wheel Pizza Cutter                      2  199.0  199.0

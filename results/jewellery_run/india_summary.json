@@ -1,0 +1,68 @@
+{
+  "category": {
+    "amazon": "Fashion & Silver Jewellery",
+    "flipkart": "Jewellery"
+  },
+  "sites": {
+    "amazon": {
+      "listings": 12340,
+      "candidate_pairs": 508100,
+      "predicted_match_pairs": 136358,
+      "groups_2plus": 523,
+      "groups_3plus": 226,
+      "listings_in_groups": 9997,
+      "groups_over_15": 14,
+      "largest_group": 7926,
+      "listings_above_20pct": 3668
+    },
+    "flipkart": {
+      "listings": 3522,
+      "candidate_pairs": 136951,
+      "predicted_match_pairs": 65015,
+      "groups_2plus": 70,
+      "groups_3plus": 41,
+      "listings_in_groups": 3369,
+      "groups_over_15": 6,
+      "largest_group": 2925,
+      "listings_above_20pct": 1210
+    }
+  },
+  "shift_check": {
+    "img": {
+      "shopee_test": 0.47915696124802026,
+      "india": 0.47040556289048385,
+      "dim": 32
+    },
+    "txt": {
+      "shopee_test": 0.5632535386057342,
+      "india": 0.5252433964283855,
+      "dim": 32
+    }
+  },
+  "strata_sizes": {
+    "H": 155445,
+    "B": 45928,
+    "R": 9964
+  },
+  "h_cut": 0.9,
+  "labelling": {
+    "labeller": "Claude (AI assistant), from titles and photos; no human labels",
+    "n_labelled": {
+      "H": 50,
+      "B": 50,
+      "R": 50
+    },
+    "precision_H": 0.02,
+    "precision_B": 0.0,
+    "weighted_precision": 0.015438514597289607,
+    "weighted_precision_ci": [
+      0.0,
+      0.046315543791868814
+    ],
+    "r_share_true_matches": 0.0,
+    "by_site": {
+      "amazon": 0.014084507042253521,
+      "flipkart": 0.0
+    }
+  }
+}

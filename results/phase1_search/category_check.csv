@@ -1,0 +1,71 @@
+site,category,priced_rows,live_rows,live_method,rule_agreement,pairs_gt_0_6,share_with_partner,identical_titles,max_rows_same_image
+amazon,Fashion & Silver Jewellery,18678,12340,url-rule,100/100,40337,0.701,580,
+amazon,Jewellery,18508,12198,url-rule,100/100,36983,0.739,452,
+amazon,Handbags & Clutches,17741,11605,url-rule,100/100,57808,0.754,1455,
+amazon,Watches,16469,10966,url-rule,100/100,33191,0.777,602,
+amazon,Gold & Diamond Jewellery,15500,10146,url-rule,100/100,1215394,0.971,7248,
+amazon,Sunglasses,1044,754,full,,1530,0.789,34,3
+amazon,Rucksacks,2040,1280,full,,563,0.389,15,5
+amazon,Backpacks,1737,1172,full,,1977,0.484,96,3
+amazon,Travel Accessories,1728,996,full,,293,0.3,3,3
+amazon,Wallets,1699,1039,full,,838,0.484,14,4
+amazon,Make-up,2427,1662,full,,543,0.34,40,2
+amazon,Beauty & Grooming,1730,1122,full,,76,0.12,2,2
+amazon,Diet & Nutrition,1060,723,full,,79,0.185,14,2
+amazon,Car Accessories,1332,852,full,,598,0.417,3,2
+amazon,Motorbike Accessories & Parts,1090,781,full,,223,0.324,4,3
+amazon,Car Parts,1085,834,full,,172,0.296,3,4
+amazon,Home Furnishing,1379,845,full,,228,0.259,9,2
+amazon,Furniture,1279,739,full,,197,0.327,21,2
+amazon,Home Décor,1222,784,full,,148,0.216,18,2
+amazon,Indoor Lighting,1211,840,full,,213,0.318,27,3
+amazon,Bedroom Linen,1189,742,full,,272,0.338,20,2
+amazon,Home Storage,1160,744,full,,160,0.288,17,2
+amazon,Kitchen & Dining,1129,723,full,,103,0.21,4,2
+amazon,Sewing & Craft Supplies,1106,719,full,,135,0.259,23,2
+amazon,"Test, Measure & Inspect",1281,839,full,,246,0.321,0,2
+amazon,Lab & Scientific,1008,678,full,,166,0.263,3,4
+amazon,Kids' Fashion,2552,1472,full,,8224,0.505,181,11
+amazon,Baby Fashion,2032,1683,full,,1459,0.504,76,5
+amazon,Kids' Watches,1994,1193,full,,5655,0.925,3,102
+amazon,School Bags,1945,1243,full,,2362,0.517,69,9
+amazon,Kids' Clothing,1940,1539,full,,23007,0.509,268,4
+amazon,Kids' Shoes,1842,1128,full,,3238,0.77,39,6
+amazon,T-shirts & Polos,17610,11489,url-rule,100/100,247989,0.845,3897,
+amazon,Shirts,16997,10875,url-rule,100/100,655774,0.926,5356,
+amazon,Jeans,15657,10073,url-rule,100/100,321148,0.951,4726,
+amazon,Innerwear,15455,10712,url-rule,100/100,96070,0.865,1885,
+amazon,Casual Shoes,16066,10461,url-rule,100/100,39894,0.81,1170,
+amazon,Sports Shoes,15904,10486,url-rule,100/100,80646,0.812,895,
+amazon,Formal Shoes,15119,10903,url-rule,100/100,107446,0.899,2346,
+amazon,Fitness Accessories,1119,682,full,,2143,0.503,26,10
+amazon,Football,1102,753,full,,430,0.453,22,2
+amazon,Badminton,1077,770,full,,3112,0.643,35,71
+amazon,Cricket,1064,748,full,,580,0.507,50,3
+amazon,Strength Training,1046,679,full,,186,0.337,5,3
+amazon,Yoga,1018,673,full,,381,0.446,25,2
+amazon,"Baby Bath, Skin & Grooming",1264,827,full,,532,0.476,26,3
+amazon,Diapers,1014,586,full,,507,0.585,60,2
+amazon,Clothing,18303,11096,url-rule,100/100,26519,0.695,912,
+amazon,Ethnic Wear,18287,12700,url-rule,100/100,75703,0.759,1459,
+amazon,Western Wear,18021,12412,url-rule,100/100,68253,0.739,1862,
+amazon,Lingerie & Nightwear,17265,11448,url-rule,100/100,41902,0.754,1051,
+amazon,Fashion Sandals,1899,1434,full,,2123,0.676,71,41
+amazon,Shoes,1647,1046,full,,613,0.47,23,2
+flipkart,Clothing,6170,4925,full,,51025,0.929,2500,7
+flipkart,Jewellery,3522,3522,full,,29819,0.925,1569,6
+flipkart,Footwear,1225,1225,full,,3146,0.842,391,3
+flipkart,Mobiles & Accessories,1097,1097,full,,42507,0.902,624,28
+flipkart,Automotive,1010,1010,full,,2826,0.897,26,45
+flipkart,Home Decor & Festive Needs,927,927,full,,5171,0.704,249,6
+flipkart,Beauty and Personal Care,709,709,full,,1131,0.735,50,2
+flipkart,Home Furnishing,700,700,full,,7591,0.924,298,3
+flipkart,Kitchen & Dining,645,645,full,,1945,0.727,21,3
+flipkart,Watches,525,190,full,,238,0.742,0,2
+flipkart,Baby Care,481,450,full,,6125,0.867,264,4
+flipkart,Tools & Hardware,387,386,full,,2702,0.946,217,6
+flipkart,Toys & School Supplies,329,329,full,,461,0.614,45,1
+flipkart,Pens & Stationery,313,313,full,,1095,0.754,98,2
+flipkart,"Bags, Wallets & Belts",264,264,full,,464,0.811,61,2
+flipkart,Furniture,180,180,full,,880,0.95,37,3
+flipkart,Sports & Fitness,166,166,full,,159,0.687,4,3

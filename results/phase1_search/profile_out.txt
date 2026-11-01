@@ -1,0 +1,147 @@
+AMAZON columns: ['Unnamed: 0', 'name', 'main_category', 'sub_category', 'image', 'link', 'ratings', 'no_of_ratings', 'discount_price', 'actual_price'] rows: 551585
+rows with selling price: 490422 | unique links: 551585 | sample price strings: ['₹32,999', '₹46,490', '₹34,490']
+main_category counts:
+ main_category
+accessories                116141
+men's clothing              76656
+women's clothing            76512
+tv, audio & cameras         68659
+men's shoes                 57456
+appliances                  33096
+stores                      32903
+home & kitchen              14568
+kids' fashion               13488
+sports & fitness            12648
+bags & luggage              10416
+beauty & health             10122
+car & motorbike              7080
+toys & baby products         6216
+women's shoes                5472
+industrial supplies          4104
+grocery & gourmet foods      3312
+pet supplies                 1632
+music                        1080
+home, kitchen, pets            24
+sub_category counts (top 60 by rows):
+                                rows  with_price  unique_links
+sub_category                                                 
+Shirts                        19200       16997         19200
+Sports Shoes                  19200       15904         19200
+Jeans                         19200       15657         19200
+Western Wear                  19200       18021         19200
+Men's Fashion                 19200       17364         19200
+Formal Shoes                  19200       15119         19200
+Innerwear                     19152       15455         19152
+Jewellery                     19152       18508         19152
+Clothing                      19152       18303         19152
+Bags & Luggage                19152       18283         19152
+Watches                       19133       16469         19133
+T-shirts & Polos              19104       17610         19104
+Fashion & Silver Jewellery    19104       18678         19104
+Handbags & Clutches           19104       17741         19104
+Gold & Diamond Jewellery      19104       15500         19104
+Lingerie & Nightwear          19104       17265         19104
+Ethnic Wear                   19056       18287         19056
+Casual Shoes                  19056       16066         19056
+Headphones                     9600        9011          9600
+Heating & Cooling Appliances   9600        8654          9600
+Kitchen & Home Appliances      9600        9184          9600
+Speakers                       9600        9052          9600
+All Electronics                9600        9116          9600
+Cameras                        9600        9204          9600
+Camera Accessories             9600        9119          9600
+All Appliances                 9576        9214          9576
+Home Entertainment Systems     9576        9148          9576
+Security Cameras               9576        8278          9576
+Sportswear                     7371        2784          7371
+Kids' Fashion                  2736        2552          2736
+Make-up                        2640        2427          2640
+School Bags                    2352        1945          2352
+Amazon Fashion                 2352        2186          2352
+Baby Fashion                   2208        2032          2208
+Rucksacks                      2208        2040          2208
+Fashion Sandals                2208        1899          2208
+Refrigerators                  2160        1393          2160
+Women's Fashion                2112        1982          2112
+Kids' Shoes                    2112        1842          2112
+Backpacks                      2064        1737          2064
+Kids' Clothing                 2064        1940          2064
+Kids' Watches                  2016        1994          2016
+Wallets                        2016        1699          2016
+Beauty & Grooming              1920        1730          1920
+Shoes                          1872        1647          1872
+The Designer Boutique          1824         962          1824
+Travel Accessories             1824        1728          1824
+Washing Machines               1440        1052          1440
+Test, Measure & Inspect        1440        1281          1440
+Home Furnishing                1416        1379          1416
+Car Accessories                1392        1332          1392
+Ballerinas                     1392         919          1392
+Sunglasses                     1392        1044          1392
+Baby Bath, Skin & Grooming     1392        1264          1392
+Furniture                      1320        1279          1320
+Fitness Accessories            1296        1119          1296
+Coffee, Tea & Beverages        1296         949          1296
+Home Décor                     1272        1222          1272
+Sewing & Craft Supplies        1272        1106          1272
+All Car & Motorbike Products   1272        1160          1272
+
+FLIPKART columns: ['uniq_id', 'crawl_timestamp', 'product_url', 'product_name', 'product_category_tree', 'pid', 'retail_price', 'discounted_price', 'image', 'is_FK_Advantage_product', 'description', 'product_rating', 'overall_rating', 'brand', 'product_specifications'] rows: 20000
+crawl years: {2015: 10315, 2016: 9685}
+rows with discounted_price: 19922 | unique pid: 19998
+top category counts (top 20):
+ top
+Clothing                      6198
+Jewellery                     3531
+Footwear                      1227
+Mobiles & Accessories         1099
+Automotive                    1012
+Home Decor & Festive Needs     929
+Beauty and Personal Care       710
+Home Furnishing                700
+Kitchen & Dining               647
+Computers                      578
+Watches                        530
+Baby Care                      483
+Tools & Hardware               391
+Toys & School Supplies         330
+Pens & Stationery              313
+Bags, Wallets & Belts          265
+Furniture                      180
+Sports & Fitness               166
+Cameras & Accessories           82
+Home Improvement                81
+level-2 counts (top 20):
+ lvl2
+Clothing > Women's Clothing                         3901
+Clothing > Men's Clothing                           1773
+Jewellery > Necklaces & Chains                      1606
+Automotive > Accessories & Spare parts               925
+Mobiles & Accessories > Tablet Accessories           795
+Footwear > Women's Footwear                          781
+Jewellery > Rings                                    743
+Jewellery > Bangles, Bracelets & Armlets             724
+Watches > Wrist Watches                              523
+Clothing > Kids' Clothing                            520
+Tools & Hardware > Tools                             391
+Beauty and Personal Care > Fragrances                391
+Computers > Laptop Accessories                       343
+Footwear > Men's Footwear                            340
+Mobiles & Accessories > Mobile Accessories           304
+Home Decor & Festive Needs > Showpieces              303
+Kitchen & Dining > Coffee Mugs                       302
+Home Decor & Festive Needs > Wall Decor & Clocks     278
+Home Furnishing > Bed Linen                          217
+Toys & School Supplies > School Supplies             214
+
+TF-IDF char3-5 cosine > 0.6 pairs, after dropping repeated links/pids and missing prices:
+  amazon/Car Accessories: rows=1332 identical_title_dupes=9 pairs>0.6=1105
+  amazon/Home Storage: rows=1160 identical_title_dupes=26 pairs>0.6=333
+  amazon/Backpacks: rows=1737 identical_title_dupes=208 pairs>0.6=7082
+  amazon/Wallets: rows=1699 identical_title_dupes=32 pairs>0.6=1547
+  amazon/Household Supplies: rows=945 identical_title_dupes=20 pairs>0.6=472
+  amazon/Fitness Accessories: rows=1119 identical_title_dupes=57 pairs>0.6=5071
+  flipkart/Kitchen & Dining: rows=645 pairs>0.6=1945
+  flipkart/Mobiles & Accessories: rows=1097 pairs>0.6=42507
+  flipkart/Automotive: rows=1010 pairs>0.6=2826
+  flipkart/Home Decor & Festive Needs: rows=927 pairs>0.6=5171

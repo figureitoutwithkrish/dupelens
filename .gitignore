@@ -1,0 +1,14 @@
+# data and caches are large and licence-restricted (blueprint section 6)
+data/
+cache/
+.venv/
+__pycache__/
+.pytest_cache/
+# macOS sidecar files that exFAT drives get next to every file
+._*
+.DS_Store
+# photo grids made for labelling contain listing photos (dataset rules may forbid redistribution)
+results/labelling/*.jpg
+results/jewellery_run/labelling/*.jpg
+.claude/
+results/jewellery_run/india_groups.json
